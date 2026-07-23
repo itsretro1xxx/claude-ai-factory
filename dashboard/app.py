@@ -162,7 +162,7 @@ async def research_analyze():
         }), 500
 
 @app.route('/api/worker/<worker_name>/metrics')
-def get_worker_metrics(worker_name):
+async def get_worker_metrics(worker_name):
     """Get specific worker metrics"""
     init_factory()
 
@@ -170,7 +170,7 @@ def get_worker_metrics(worker_name):
         if worker_name.lower() in worker.name.lower():
             return jsonify({
                 "worker": worker.name,
-                "metrics": worker.get_metrics()
+                "metrics": await worker.get_metrics()
             })
 
     return jsonify({"error": "Worker not found"}), 404

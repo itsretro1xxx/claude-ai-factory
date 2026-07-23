@@ -16,6 +16,6 @@ class AIFactory:
     def metrics(self):
         return {
             "workers_registered": len(self.workers),
-            "tasks_completed": sum(w.metrics["tasks_completed"] for w in self.workers),
-            "tasks_failed": sum(w.metrics["tasks_failed"] for w in self.workers),
+            "tasks_completed": sum(w.metrics.get("tasks_completed", 0) for w in self.workers),
+            "tasks_failed": sum(w.metrics.get("tasks_failed", 0) for w in self.workers),
         }
