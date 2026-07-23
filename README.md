@@ -94,6 +94,27 @@ cd claude-ai-factory
 pip install -r requirements.txt
 ```
 
+### Configuration
+
+Copy `.env.example` to `.env` and fill in your keys:
+
+```bash
+cp .env.example .env
+```
+
+```
+CLAUDE_API_KEY=your_key_here
+ETSY_API_KEY=your_key_here
+YOUTUBE_API_KEY=your_key_here
+```
+
+> `CLAUDE_API_KEY` is accepted as an alias for the Claude SDK's standard
+> `ANTHROPIC_API_KEY` — the Etsy POD pipeline picks up either. That room also
+> needs `PRINTFUL_API_KEY`, `ETSY_ACCESS_TOKEN`, and `ETSY_SHOP_ID` for the
+> mockup/publish steps — see `etsy-print-on-demand/.env.example`. YouTube
+> Shorts automation isn't built yet, so `YOUTUBE_API_KEY` isn't consumed by
+> any code until that room's pipeline exists.
+
 ### Next steps
 
 1. Read [`ROADMAP.md`](ROADMAP.md) for the phased build-out (setup → one manual
