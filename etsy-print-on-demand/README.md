@@ -46,3 +46,28 @@ provider prints and ships per order.
 Design generation and listing copywriting are the most repetitive steps once
 you're doing more than one niche — automate those before touching
 publishing, and keep a manual review step before anything goes live.
+
+## Automated pipeline (code)
+
+`pipeline/` implements the worker pipeline above as Python modules:
+
+| Module | Worker | Status |
+|---|---|---|
+| `pipeline/design.py` | Design generator — Claude-generated design concepts + image-gen prompts | Automated |
+| `pipeline/listing.py` | Listing copywriter — Claude-generated title/13 tags/description/price | Automated |
+| `pipeline/mockup.py` | Mockup builder — Printful API | Needs `PRINTFUL_API_KEY` |
+| `pipeline/publisher.py` | Publisher — Etsy Open API v3 (creates draft listings only, by design) | Needs Etsy OAuth credentials |
+| `pipeline/tracker.py` | Performance tracker — local JSONL log | Ready |
+
+Run the two automated steps end to end:
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env   # fill in ANTHROPIC_API_KEY at minimum
+python run.py --audience "plant-obsessed cat owners" --theme "gifts" --count 5
+```
+
+This writes `data/niches/<slug>/designs.json` and `listings.json`. Mockup
+building and publishing are separate, credential-gated steps (see the
+module docstrings) — deliberately not chained automatically yet, per the
+"lightweight review/approval gate" guidance in the root `ROADMAP.md`.

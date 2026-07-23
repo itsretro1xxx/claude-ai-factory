@@ -1,0 +1,5 @@
+.env
+__pycache__/
+*.pyc
+etsy-print-on-demand/data/niches/
+etsy-print-on-demand/data/performance.jsonl
