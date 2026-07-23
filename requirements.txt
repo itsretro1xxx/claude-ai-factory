@@ -1,0 +1,4 @@
+# Shared across rooms. Room-specific extras (if any) live in that room's own
+# requirements.txt — e.g. etsy-print-on-demand/requirements.txt.
+anthropic>=0.68.0
+requests>=2.31.0

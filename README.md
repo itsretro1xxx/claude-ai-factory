@@ -1,8 +1,19 @@
-# Claude AI Factory
+# Claude AI Factory 🏭
 
-An AI-worker-driven revenue operation, structured like a small factory floor: one
-central research hub coordinating specialized "rooms," each room running its own
-pipeline of AI workers toward a specific revenue stream.
+An AI-powered autonomous factory system with AI workers managing multiple revenue streams.
+
+## 🎯 Vision
+
+Build a scalable AI factory that:
+- Conducts AI research and development
+- Generates revenue through multiple automated channels
+- Manages AI workers autonomously
+- Learns and improves over time
+
+## 📦 Project Structure
+
+One central research hub coordinating specialized "rooms," each room running its
+own pipeline of AI workers toward a specific revenue stream.
 
 ```
                      ┌────────────────────┐
@@ -19,19 +30,71 @@ pipeline of AI workers toward a specific revenue stream.
    └───────────────────────┘          └─────────────────────────┘
 ```
 
-## The three rooms
-
 | Room | Folder | Job |
 |---|---|---|
 | Research Hub | [`research-hub/`](research-hub/README.md) | Finds what's worth making, tracks what's working, feeds the other rooms |
-| Etsy Print-on-Demand | [`etsy-print-on-demand/`](etsy-print-on-demand/README.md) | Turns a niche into listed, sellable designs with no inventory held |
+| Etsy Print-on-Demand | [`etsy-print-on-demand/`](etsy-print-on-demand/README.md) | Turns a niche into listed, sellable designs with no inventory held. Has a working `pipeline/` for design generation + Etsy listing copy — see its README. |
 | YouTube Shorts Automation | [`youtube-shorts-automation/`](youtube-shorts-automation/README.md) | Turns a content pillar into a steady stream of published Shorts |
 
 Each room's README lays out: the worker pipeline (who does what, in order), the
 external tools/APIs it needs, and a concrete task checklist to get its first
 output live.
 
-## How to use this repo
+## 💰 Revenue Streams
+
+### 1. **Etsy Print-on-Demand Store** 🛍️
+- AI-generated designs
+- Automated product listings
+- Order processing and fulfillment coordination
+- Analytics and optimization
+
+### 2. **YouTube Shorts Automation** 📹
+- AI content generation
+- Video creation and editing
+- Automated upload and publishing
+- Analytics and engagement tracking
+
+### 3. **Additional Revenue Ideas** 🚀
+- TikTok automation (similar to YouTube Shorts)
+- Blog/content monetization with AI writing
+- AI art generation and NFT minting
+- Affiliate marketing automation
+- Digital product creation
+- Email marketing automation
+
+## 🧠 Research & Development
+
+Core research initiatives:
+- AI worker optimization and coordination
+- Multi-agent collaboration patterns
+- Autonomous decision-making systems
+- Cost optimization strategies
+
+## 🤖 AI Workers
+
+Each revenue stream is managed by AI workers specialized in:
+- Task execution
+- Decision making
+- Reporting and analytics
+- Continuous improvement
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.9+
+- Claude API key
+- Required API keys for each revenue stream (see each room's README — e.g.
+  Etsy POD needs a Printful key and Etsy OAuth credentials)
+
+### Installation
+
+```bash
+git clone https://github.com/itsretro1xxx/claude-ai-factory.git
+cd claude-ai-factory
+pip install -r requirements.txt
+```
+
+### Next steps
 
 1. Read [`ROADMAP.md`](ROADMAP.md) for the phased build-out (setup → one manual
    pass by hand → automate step by step → scale).
