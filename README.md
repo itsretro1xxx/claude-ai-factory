@@ -115,6 +115,17 @@ YOUTUBE_API_KEY=your_key_here
 > Shorts automation isn't built yet, so `YOUTUBE_API_KEY` isn't consumed by
 > any code until that room's pipeline exists.
 
+### Running a room
+
+`factory/main.py` is the single entry point — it dispatches to whichever
+room you name and forwards any extra flags straight to that room's own
+`run.py`:
+
+```bash
+python -m factory.main etsy --audience "plant-obsessed cat owners" --theme gifts --count 5
+python -m factory.main youtube   # prints a pointer to that room's manual-pass checklist — no pipeline yet
+```
+
 ### Next steps
 
 1. Read [`ROADMAP.md`](ROADMAP.md) for the phased build-out (setup → one manual
