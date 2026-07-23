@@ -1,211 +1,179 @@
-"""Status dashboard + API for the Claude AI Factory repo.
-
-Reads ROADMAP.md and each room's README.md straight from disk and renders a
-single-page overview: roadmap phase progress plus a card per room. Also
-exposes a JSON API mirroring the worker pipelines documented in each room's
-README (see WORKERS below) — the generate/analyze endpoints are stubs until
-an actual image/TTS/LLM backend is wired in per Roadmap Phase 0.
 """
-import re
-from datetime import datetime, timezone
-from pathlib import Path
+Dashboard - Web UI for Claude AI Factory
+Main entry point for the factory dashboard
+"""
 
-from flask import Flask, abort, jsonify, render_template, request
+from flask import Flask, render_template, jsonify, request, send_file
+import asyncio
+import os
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import json
+import logging
 
-ROOT = Path(__file__).resolve().parent.parent
+from factory.factory import AIFactory
+from workers.etsy_worker import EtsyWorker
+from workers.youtube_worker import YouTubeWorker
+from workers.research_worker import ResearchWorker
 
-ROOMS = [
-    ("Research Hub", "research-hub"),
-    ("Etsy Print-on-Demand", "etsy-print-on-demand"),
-    ("YouTube Shorts Automation", "youtube-shorts-automation"),
-]
+load_dotenv()
 
-# Worker pipelines as documented in each room's README, keyed by worker name.
-WORKERS = {
-    "niche_picker": "etsy-print-on-demand",
-    "design_generator": "etsy-print-on-demand",
-    "mockup_builder": "etsy-print-on-demand",
-    "listing_copywriter": "etsy-print-on-demand",
-    "publisher": "etsy-print-on-demand",
-    "performance_tracker": "etsy-print-on-demand",
-    "topic_picker": "youtube-shorts-automation",
-    "script_writer": "youtube-shorts-automation",
-    "voiceover_generator": "youtube-shorts-automation",
-    "video_assembler": "youtube-shorts-automation",
-    "thumbnail_writer": "youtube-shorts-automation",
-    "trend_scout": "research-hub",
-    "niche_topic_scorer": "research-hub",
-    "performance_analyst": "research-hub",
-    "briefing_writer": "research-hub",
-}
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# In-memory call counters per worker. Resets on restart; this is a status
-# dashboard, not a metrics store — swap for a real backend if that's needed.
-worker_metrics = {name: {"calls": 0, "last_called": None} for name in WORKERS}
-
+# Initialize Flask app
 app = Flask(__name__)
+app.config['JSON_SORT_KEYS'] = False
 
+# Global factory instance
+factory = None
+factory_start_time = None
 
-@app.errorhandler(404)
-def handle_not_found(err):
-    if request.path.startswith("/api/"):
-        return jsonify({"error": err.description}), 404
-    return err
+def init_factory():
+    """Initialize the AI factory"""
+    global factory, factory_start_time
 
+    if factory is None:
+        factory_start_time = datetime.now()
 
-def record_worker_call(name):
-    metrics = worker_metrics[name]
-    metrics["calls"] += 1
-    metrics["last_called"] = datetime.now(timezone.utc).isoformat()
-
-
-def parse_roadmap(text):
-    phases = []
-    current = None
-    for line in text.splitlines():
-        heading = re.match(r"^##\s+(.*)", line)
-        if heading:
-            current = {"title": heading.group(1).strip(), "done": 0, "total": 0}
-            phases.append(current)
-            continue
-        item = re.match(r"^\s*-\s+\[( |x|X)\]\s+(.*)", line)
-        if item and current is not None:
-            current["total"] += 1
-            if item.group(1).lower() == "x":
-                current["done"] += 1
-    for phase in phases:
-        phase["pct"] = round(100 * phase["done"] / phase["total"]) if phase["total"] else 0
-    return phases
-
-
-def parse_room_readme(path):
-    if not path.exists():
-        return {"title": path.parent.name, "summary": ""}
-    text = path.read_text()
-    title_match = re.search(r"^#\s+(.*)", text, re.MULTILINE)
-    title = title_match.group(1).strip() if title_match else path.parent.name
-    paragraphs = re.split(r"\n\s*\n", text[title_match.end():].strip() if title_match else text)
-    summary = ""
-    for para in paragraphs:
-        para = para.strip()
-        if para and not para.startswith("#") and not para.startswith("|"):
-            summary = re.sub(r"\s+", " ", para)
-            break
-    return {"title": title, "summary": summary}
-
-
-def gather_status():
-    roadmap_path = ROOT / "ROADMAP.md"
-    phases = parse_roadmap(roadmap_path.read_text()) if roadmap_path.exists() else []
-
-    rooms = []
-    for label, folder in ROOMS:
-        info = parse_room_readme(ROOT / folder / "README.md")
-        rooms.append({"label": label, "folder": folder, **info})
-
-    return phases, rooms
-
-
-@app.route("/")
-def index():
-    phases, rooms = gather_status()
-    total_done = sum(p["done"] for p in phases)
-    total_tasks = sum(p["total"] for p in phases)
-    overall_pct = round(100 * total_done / total_tasks) if total_tasks else 0
-    return render_template(
-        "index.html",
-        phases=phases,
-        rooms=rooms,
-        total_done=total_done,
-        total_tasks=total_tasks,
-        overall_pct=overall_pct,
-    )
-
-
-@app.route("/api/factory-status")
-def api_factory_status():
-    phases, rooms = gather_status()
-    total_done = sum(p["done"] for p in phases)
-    total_tasks = sum(p["total"] for p in phases)
-    overall_pct = round(100 * total_done / total_tasks) if total_tasks else 0
-    return jsonify(
-        {
-            "overall": {"done": total_done, "total": total_tasks, "pct": overall_pct},
-            "phases": phases,
-            "rooms": rooms,
+        config = {
+            "name": "Claude AI Factory 🏭",
+            "env": os.getenv("FACTORY_ENV", "development"),
+            "start_time": factory_start_time.isoformat()
         }
-    )
 
+        factory = AIFactory(config)
 
-def _not_implemented(worker, note, **extra):
-    record_worker_call(worker)
-    return (
-        jsonify(
+        # Register workers
+        etsy_config = {
+            "max_listings_per_run": 5,
+            "design_style": "modern,minimalist,trending"
+        }
+        etsy_worker = EtsyWorker(etsy_config)
+        factory.register_worker(etsy_worker)
+
+        youtube_config = {
+            "content_types": ["trending", "tutorial", "entertainment"],
+            "shorts_per_batch": 2
+        }
+        youtube_worker = YouTubeWorker(youtube_config)
+        factory.register_worker(youtube_worker)
+
+        research_config = {
+            "analysis_depth": "deep"
+        }
+        research_worker = ResearchWorker(research_config)
+        factory.register_worker(research_worker)
+
+        logger.info("Factory initialized with 3 workers")
+
+    return factory
+
+@app.route('/')
+def dashboard():
+    """Serve the main dashboard"""
+    init_factory()
+    return render_template('dashboard.html')
+
+@app.route('/api/factory-status')
+def get_factory_status():
+    """Get current factory status"""
+    init_factory()
+
+    days_running = (datetime.now() - factory_start_time).days
+
+    status = {
+        "factory_name": factory.name,
+        "days_running": days_running,
+        "workers_count": len(factory.workers),
+        "workers": [
             {
-                "status": "not_implemented",
-                "worker": worker,
-                "room": WORKERS[worker],
-                "note": note,
-                **extra,
+                "name": worker.name,
+                "status": worker.status,
+                "tasks_completed": len(worker.task_history),
+                "metrics": worker.metrics
             }
-        ),
-        501,
-    )
+            for worker in factory.workers
+        ],
+        "metrics": factory.metrics
+    }
 
+    return jsonify(status)
 
-@app.route("/api/etsy/generate-design", methods=["POST"])
-def api_etsy_generate_design():
-    body = request.get_json(silent=True) or {}
-    niche = body.get("niche")
-    if not niche:
-        return jsonify({"error": "'niche' is required"}), 400
-    count = body.get("count", 3)
-    return _not_implemented(
-        "design_generator",
-        "No image-generation backend is wired in yet — see "
-        "etsy-print-on-demand/README.md pipeline step 2 and Roadmap Phase 0.",
-        niche=niche,
-        count=count,
-    )
+@app.route('/api/etsy/generate-design')
+async def generate_etsy_design():
+    """Generate Etsy design using Claude"""
+    init_factory()
 
+    try:
+        etsy_worker = factory.workers[0]
+        result = await etsy_worker.execute_task("design_generation")
 
-@app.route("/api/youtube/generate-short", methods=["POST"])
-def api_youtube_generate_short():
-    body = request.get_json(silent=True) or {}
-    topic = body.get("topic")
-    if not topic:
-        return jsonify({"error": "'topic' is required"}), 400
-    count = body.get("count", 1)
-    return _not_implemented(
-        "script_writer",
-        "No script/TTS/video-assembly backend is wired in yet — see "
-        "youtube-shorts-automation/README.md pipeline steps 2-4 and Roadmap Phase 0.",
-        topic=topic,
-        count=count,
-    )
+        return jsonify({
+            "status": "success",
+            "data": result
+        })
+    except Exception as e:
+        logger.error(f"Error generating design: {e}")
+        return jsonify({
+            "status": "error",
+            "error": str(e)
+        }), 500
 
+@app.route('/api/youtube/generate-short')
+async def generate_youtube_short():
+    """Generate YouTube short script and ideas"""
+    init_factory()
 
-@app.route("/api/research/analyze", methods=["POST"])
-def api_research_analyze():
-    body = request.get_json(silent=True) or {}
-    query = body.get("query")
-    if not query:
-        return jsonify({"error": "'query' is required"}), 400
-    return _not_implemented(
-        "trend_scout",
-        "No trend-data backend is wired in yet — see "
-        "research-hub/README.md worker roles and Roadmap Phase 4.",
-        query=query,
-    )
+    try:
+        youtube_worker = factory.workers[1]
+        result = await youtube_worker.execute_task("script_generation")
 
+        return jsonify({
+            "status": "success",
+            "data": result
+        })
+    except Exception as e:
+        logger.error(f"Error generating short: {e}")
+        return jsonify({
+            "status": "error",
+            "error": str(e)
+        }), 500
 
-@app.route("/api/worker/<name>/metrics")
-def api_worker_metrics(name):
-    if name not in WORKERS:
-        abort(404, description=f"Unknown worker '{name}'. Known workers: {sorted(WORKERS)}")
-    metrics = worker_metrics[name]
-    return jsonify({"worker": name, "room": WORKERS[name], **metrics})
+@app.route('/api/research/analyze')
+async def research_analyze():
+    """Get research insights and trending ideas"""
+    init_factory()
 
+    try:
+        research_worker = factory.workers[2]
+        result = await research_worker.execute_task("market_research")
 
-if __name__ == "__main__":
-    app.run(debug=True, port=8000)
+        return jsonify({
+            "status": "success",
+            "data": result
+        })
+    except Exception as e:
+        logger.error(f"Error analyzing research: {e}")
+        return jsonify({
+            "status": "error",
+            "error": str(e)
+        }), 500
+
+@app.route('/api/worker/<worker_name>/metrics')
+def get_worker_metrics(worker_name):
+    """Get specific worker metrics"""
+    init_factory()
+
+    for worker in factory.workers:
+        if worker_name.lower() in worker.name.lower():
+            return jsonify({
+                "worker": worker.name,
+                "metrics": worker.get_metrics()
+            })
+
+    return jsonify({"error": "Worker not found"}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)

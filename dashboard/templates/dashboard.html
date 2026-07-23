@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude AI Factory — Dashboard</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
+    background: #f7f7f8; color: #1a1a1a;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #16161a; color: #e6e6e6; }
+    .card { background: #212126 !important; border-color: #33333a !important; }
+    .folder { color: #9a9aa5 !important; }
+    .result { background: #0f0f12 !important; border-color: #33333a !important; color: #e6e6e6 !important; }
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .subtitle { color: #666; margin-top: 0; }
+  .overall { font-size: 0.95rem; margin: 1.5rem 0 0.5rem; font-weight: 600; }
+  .card {
+    background: #fff; border: 1px solid #e2e2e5; border-radius: 10px;
+    padding: 0.9rem 1.1rem; margin-bottom: 0.7rem;
+  }
+  .rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.8rem; margin-top: 0.5rem; }
+  .card h3 { margin: 0 0 0.4rem; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .card p { margin: 0 0 0.5rem; font-size: 0.88rem; line-height: 1.4; color: #444; }
+  @media (prefers-color-scheme: dark) { .card p { color: #c2c2c8; } }
+  .status-pill { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: #eee; color: #555; text-transform: uppercase; }
+  .status-pill.running { background: #6c5ce7; color: #fff; }
+  button { font-size: 0.82rem; padding: 0.4rem 0.7rem; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+  button:hover { background: #f0f0f0; }
+  @media (prefers-color-scheme: dark) { button { background: #2a2a30; color: #e6e6e6; border-color: #444; } button:hover { background: #34343c; } }
+  .result { margin-top: 0.6rem; font-size: 0.78rem; font-family: monospace; white-space: pre-wrap; background: #f0f0f2; border: 1px solid #e2e2e5; border-radius: 6px; padding: 0.6rem; display: none; }
+  section { margin-top: 2rem; }
+  section > h2 { font-size: 1.05rem; margin-bottom: 0.6rem; }
+</style>
+</head>
+<body>
+  <h1 id="factory-name">Claude AI Factory</h1>
+  <p class="subtitle" id="factory-subtitle">Loading status…</p>
+
+  <section>
+    <h2>Workers</h2>
+    <div class="rooms" id="workers"></div>
+  </section>
+
+  <script>
+    const actions = {
+      "Etsy Print-on-Demand Worker": { endpoint: "/api/etsy/generate-design", label: "Generate design" },
+      "YouTube Shorts Worker": { endpoint: "/api/youtube/generate-short", label: "Generate short" },
+      "Research Hub Worker": { endpoint: "/api/research/analyze", label: "Run analysis" },
+    };
+
+    // Last result per worker, so a re-render (loadStatus) doesn't wipe out
+    // the output of an action that just ran.
+    const lastResults = {};
+
+    async function loadStatus() {
+      const res = await fetch("/api/factory-status");
+      const data = await res.json();
+      document.getElementById("factory-name").textContent = data.factory_name;
+      document.getElementById("factory-subtitle").textContent =
+        `${data.workers_count} workers · running ${data.days_running}d · ` +
+        `${data.metrics.tasks_completed} completed / ${data.metrics.tasks_failed} failed`;
+
+      const container = document.getElementById("workers");
+      container.innerHTML = "";
+      for (const worker of data.workers) {
+        const action = actions[worker.name];
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${worker.name} <span class="status-pill ${worker.status}">${worker.status}</span></h3>
+          <p>Tasks run: ${worker.tasks_completed} · completed: ${worker.metrics.tasks_completed} · failed: ${worker.metrics.tasks_failed}</p>
+          ${action ? `<button data-endpoint="${action.endpoint}">${action.label}</button>` : ""}
+          <pre class="result"></pre>
+        `;
+        const result = card.querySelector(".result");
+        if (worker.name in lastResults) {
+          result.style.display = "block";
+          result.textContent = lastResults[worker.name];
+        }
+        if (action) {
+          const button = card.querySelector("button");
+          button.addEventListener("click", async () => {
+            button.disabled = true;
+            result.style.display = "block";
+            result.textContent = "Running…";
+            try {
+              const res = await fetch(action.endpoint);
+              const body = await res.json();
+              lastResults[worker.name] = JSON.stringify(body, null, 2);
+            } catch (err) {
+              lastResults[worker.name] = String(err);
+            } finally {
+              button.disabled = false;
+              loadStatus();
+            }
+          });
+        }
+        container.appendChild(card);
+      }
+    }
+
+    loadStatus();
+  </script>
+</body>
+</html>
