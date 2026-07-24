@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude AI Factory - Game Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Press Start 2P', cursive;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        body {
+            background-image:
+                linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, 0.03) 25%, rgba(0, 255, 0, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.03) 75%, rgba(0, 255, 0, 0.03) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 255, 0, 0.03) 25%, rgba(0, 255, 0, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.03) 75%, rgba(0, 255, 0, 0.03) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* KINGDOM HEADER - old brick banner across the top */
+        .kingdom-header {
+            flex: none;
+            position: relative;
+            background-color: #7a3a28;
+            background-image:
+                url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KPHBhdGggZD0iTTQgNTggQyAxMiA0MiwgNiAyNiwgMjIgMTQgQyAzMCA4LCAzNCAxMCwgNDIgNCIgc3Ryb2tlPSIjM2Y2YjJjIiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8ZWxsaXBzZSBjeD0iMTUiIGN5PSIzNCIgcng9IjciIHJ5PSI0IiBmaWxsPSIjNWY4ZjNmIiB0cmFuc2Zvcm09InJvdGF0ZSgtMzUgMTUgMzQpIi8+CjxlbGxpcHNlIGN4PSIyNiIgY3k9IjE3IiByeD0iNiIgcnk9IjMuNSIgZmlsbD0iIzZmYTA0YSIgdHJhbnNmb3JtPSJyb3RhdGUoMjUgMjYgMTcpIi8+CjxlbGxpcHNlIGN4PSIzOCIgY3k9IjgiIHJ4PSI1LjUiIHJ5PSIzLjIiIGZpbGw9IiM1YThhM2MiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA4KSIvPgo8ZWxsaXBzZSBjeD0iNyIgY3k9IjUwIiByeD0iNS41IiByeT0iMy4yIiBmaWxsPSIjNmZhMDRhIiB0cmFuc2Zvcm09InJvdGF0ZSg0NSA3IDUwKSIvPgo8L3N2Zz4="),
+                url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KPGcgdHJhbnNmb3JtPSJzY2FsZSgtMSwxKSB0cmFuc2xhdGUoLTYwLDApIj4KPHBhdGggZD0iTTQgNTggQyAxMiA0MiwgNiAyNiwgMjIgMTQgQyAzMCA4LCAzNCAxMCwgNDIgNCIgc3Ryb2tlPSIjM2Y2YjJjIiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8ZWxsaXBzZSBjeD0iMTUiIGN5PSIzNCIgcng9IjciIHJ5PSI0IiBmaWxsPSIjNWY4ZjNmIiB0cmFuc2Zvcm09InJvdGF0ZSgtMzUgMTUgMzQpIi8+CjxlbGxpcHNlIGN4PSIyNiIgY3k9IjE3IiByeD0iNiIgcnk9IjMuNSIgZmlsbD0iIzZmYTA0YSIgdHJhbnNmb3JtPSJyb3RhdGUoMjUgMjYgMTcpIi8+CjxlbGxpcHNlIGN4PSIzOCIgY3k9IjgiIHJ4PSI1LjUiIHJ5PSIzLjIiIGZpbGw9IiM1YThhM2MiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA4KSIvPgo8ZWxsaXBzZSBjeD0iNyIgY3k9IjUwIiByeD0iNS41IiByeT0iMy4yIiBmaWxsPSIjNmZhMDRhIiB0cmFuc2Zvcm09InJvdGF0ZSg0NSA3IDUwKSIvPgo8L2c+Cjwvc3ZnPg=="),
+                linear-gradient(rgba(0, 0, 0, 0.35) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.35) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.35) 2px, transparent 2px);
+            background-repeat: no-repeat, no-repeat, repeat, repeat, repeat;
+            background-position: left 10px top 4px, right 10px top 4px, 0 0, 0 0, 22px 11px;
+            background-size: 46px 46px, 46px 46px, 100% 22px, 44px 22px, 44px 22px;
+            border-bottom: 5px solid #2a160c;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), inset 0 -4px 8px rgba(0, 0, 0, 0.3);
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .kingdom-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.3em;
+            color: #ffd97a;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 0 #2a160c, 0 0 14px rgba(255, 200, 100, 0.45);
+            margin: 0;
+        }
+
+        .game-container {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            gap: 0;
+            background: linear-gradient(135deg, #0a0e1f 0%, #0f1a3c 50%, #050d2a 100%);
+        }
+
+        /* MAIN GAME WORLD */
+        .game-world {
+            flex: 1;
+            background: linear-gradient(180deg, #050811 0%, #0f1828 50%, #0a1220 100%);
+            border: 3px solid #00ff00;
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                inset 0 0 40px rgba(0, 255, 0, 0.2),
+                inset 0 0 80px rgba(0, 212, 255, 0.1),
+                0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 0, 0.01) 0px,
+                    rgba(0, 255, 0, 0.01) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            overflow: hidden;
+        }
+
+        /* ROOM BACKGROUND - real room art, cover-fit */
+        .room-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .room-atmosphere {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        /* MINI MAP SIDEBAR - stone & brass, to match the castle room art */
+        .mini-map {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background:
+                repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0px, rgba(0, 0, 0, 0.12) 2px, transparent 2px, transparent 34px),
+                repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 2px, transparent 2px, transparent 68px),
+                linear-gradient(180deg, #5c5a56 0%, #43413e 100%);
+            border: 4px solid #6b4a2b;
+            border-radius: 0;
+            padding: 25px;
+            overflow-y: auto;
+            border-left: none;
+            box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .mini-map-title {
+            color: #f0d38a;
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(180deg, #4a3423 0%, #2e2014 100%);
+            border: 2px solid #caa66b;
+            padding: 12px 8px;
+            margin: 0 0 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.55em;
+            text-shadow: 1px 1px 0 #000;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .mini-map-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .room-indicator {
+            border: 3px solid #3a2416;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.45em;
+            cursor: pointer;
+            transition: filter 0.1s, transform 0.15s, box-shadow 0.1s, border-color 0.1s;
+            background-color: #8a4230;
+            background-image:
+                url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KPHBhdGggZD0iTTQgNTggQyAxMiA0MiwgNiAyNiwgMjIgMTQgQyAzMCA4LCAzNCAxMCwgNDIgNCIgc3Ryb2tlPSIjM2Y2YjJjIiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8ZWxsaXBzZSBjeD0iMTUiIGN5PSIzNCIgcng9IjciIHJ5PSI0IiBmaWxsPSIjNWY4ZjNmIiB0cmFuc2Zvcm09InJvdGF0ZSgtMzUgMTUgMzQpIi8+CjxlbGxpcHNlIGN4PSIyNiIgY3k9IjE3IiByeD0iNiIgcnk9IjMuNSIgZmlsbD0iIzZmYTA0YSIgdHJhbnNmb3JtPSJyb3RhdGUoMjUgMjYgMTcpIi8+CjxlbGxpcHNlIGN4PSIzOCIgY3k9IjgiIHJ4PSI1LjUiIHJ5PSIzLjIiIGZpbGw9IiM1YThhM2MiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA4KSIvPgo8ZWxsaXBzZSBjeD0iNyIgY3k9IjUwIiByeD0iNS41IiByeT0iMy4yIiBmaWxsPSIjNmZhMDRhIiB0cmFuc2Zvcm09InJvdGF0ZSg0NSA3IDUwKSIvPgo8L3N2Zz4="),
+                linear-gradient(rgba(0, 0, 0, 0.35) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.35) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.35) 2px, transparent 2px);
+            background-repeat: no-repeat, repeat, repeat, repeat;
+            background-position: top right -4px, 0 0, 0 0, 25px 8px;
+            background-size: 36px 36px, 100% 16px, 50px 16px, 50px 16px;
+            padding: 15px;
+            text-align: center;
+            min-height: 90px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.5s;
+            z-index: 0;
+        }
+
+        .room-indicator:hover::before {
+            left: 100%;
+        }
+
+        .room-indicator > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .room-indicator:hover {
+            border-color: #ffcf70;
+            transform: scale(1.02);
+            filter: brightness(1.15);
+            box-shadow: 0 0 10px rgba(217, 138, 61, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.55);
+        }
+
+        .room-indicator.active {
+            border-color: #ffb84d;
+            filter: brightness(1.25) saturate(1.1);
+            box-shadow: 0 0 16px rgba(255, 184, 77, 0.7), inset 0 0 10px rgba(0, 0, 0, 0.55);
+        }
+
+        .room-name {
+            color: #f0d38a;
+            font-size: 0.48em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .room-worker {
+            color: #b8dba0;
+            font-size: 0.38em;
+            letter-spacing: 1px;
+        }
+
+        /* STATS PANEL */
+        .stats-panel {
+            background: linear-gradient(180deg, rgba(45, 36, 22, 0.6), rgba(24, 19, 11, 0.7));
+            border: 3px solid #8a6b3f;
+            border-radius: 0;
+            padding: 15px;
+            margin-top: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .stats-title {
+            color: #f0d38a;
+            font-size: 0.38em;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #8a6b3f;
+            padding-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.32em;
+            color: #d8c9a3;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(202, 166, 107, 0.2);
+        }
+
+        .stat-value {
+            color: #ffb84d;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #000;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* CONTROLS PANEL */
+        .controls-panel {
+            background: linear-gradient(180deg, rgba(45, 36, 22, 0.6), rgba(24, 19, 11, 0.7));
+            border: 3px solid #8a6b3f;
+            border-radius: 0;
+            padding: 15px;
+            margin-top: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .control-title {
+            color: #f0d38a;
+            font-size: 0.38em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #8a6b3f;
+            padding-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .movement-keys {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .key {
+            background: linear-gradient(135deg, #a9773f 0%, #6b4a2b 100%);
+            border: 2px solid #caa66b;
+            border-radius: 0;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.32em;
+            font-weight: bold;
+            color: #f0d38a;
+            transition: all 0.1s;
+        }
+
+        .key:active {
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.6);
+        }
+
+        .key-spacer {
+            grid-column: 1 / 4;
+            font-size: 0.28em;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background-color: #8a4230;
+            background-image:
+                url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KPGcgdHJhbnNmb3JtPSJzY2FsZSgtMSwxKSB0cmFuc2xhdGUoLTYwLDApIj4KPHBhdGggZD0iTTQgNTggQyAxMiA0MiwgNiAyNiwgMjIgMTQgQyAzMCA4LCAzNCAxMCwgNDIgNCIgc3Ryb2tlPSIjM2Y2YjJjIiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8ZWxsaXBzZSBjeD0iMTUiIGN5PSIzNCIgcng9IjciIHJ5PSI0IiBmaWxsPSIjNWY4ZjNmIiB0cmFuc2Zvcm09InJvdGF0ZSgtMzUgMTUgMzQpIi8+CjxlbGxpcHNlIGN4PSIyNiIgY3k9IjE3IiByeD0iNiIgcnk9IjMuNSIgZmlsbD0iIzZmYTA0YSIgdHJhbnNmb3JtPSJyb3RhdGUoMjUgMjYgMTcpIi8+CjxlbGxpcHNlIGN4PSIzOCIgY3k9IjgiIHJ4PSI1LjUiIHJ5PSIzLjIiIGZpbGw9IiM1YThhM2MiIHRyYW5zZm9ybT0icm90YXRlKC0yMCAzOCA4KSIvPgo8ZWxsaXBzZSBjeD0iNyIgY3k9IjUwIiByeD0iNS41IiByeT0iMy4yIiBmaWxsPSIjNmZhMDRhIiB0cmFuc2Zvcm09InJvdGF0ZSg0NSA3IDUwKSIvPgo8L2c+Cjwvc3ZnPg=="),
+                linear-gradient(rgba(0, 0, 0, 0.35) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.35) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.35) 2px, transparent 2px);
+            background-repeat: no-repeat, repeat, repeat, repeat;
+            background-position: top right -2px, 0 0, 0 0, 15px 6px;
+            background-size: 26px 26px, 100% 12px, 30px 12px, 30px 12px;
+            border: 2px solid #3a2416;
+            border-radius: 0;
+            padding: 12px;
+            font-size: 0.32em;
+            font-weight: bold;
+            color: #ffe9b8;
+            text-shadow: 1px 1px 0 #2a160c;
+            cursor: pointer;
+            transition: filter 0.1s, transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Press Start 2P', cursive;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.3s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+            box-shadow: 0 0 10px rgba(255, 184, 77, 0.8), inset 0 0 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+        }
+
+        /* SPRITE STYLES */
+        .sprite {
+            position: absolute;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            z-index: 50;
+        }
+
+        .sprite-char {
+            width: 44px;
+            height: 44px;
+            background-color: rgba(0, 0, 0, 0.55);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            image-rendering: pixelated;
+            border: 2px solid;
+            border-radius: 0;
+            transition: all 0.1s;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .sprite-name {
+            font-size: 0.4em;
+            font-family: 'Press Start 2P', cursive;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3px 8px;
+            border: 1px solid;
+            white-space: nowrap;
+            margin-top: 4px;
+            border-radius: 0;
+            letter-spacing: 1px;
+        }
+
+        .sprite-activity {
+            position: absolute;
+            font-size: 1.2em;
+            top: -18px;
+            animation: float-activity 0.6s ease-in-out infinite;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        @keyframes float-activity {
+            0%, 100% { transform: translateY(0px); opacity: 1; }
+            50% { transform: translateY(-8px); opacity: 0.8; }
+        }
+
+        .worker-alex .sprite-char {
+            border-color: #FF6B6B;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+        }
+
+        .worker-alex .sprite-name {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.4);
+        }
+
+        .worker-maria .sprite-char {
+            border-color: #4ECDC4;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.6);
+        }
+
+        .worker-maria .sprite-name {
+            border-color: #4ECDC4;
+            color: #4ECDC4;
+            text-shadow: 0 0 5px rgba(78, 205, 196, 0.4);
+        }
+
+        .worker-sam .sprite-char {
+            border-color: #95E1D3;
+            box-shadow: 0 0 10px rgba(149, 225, 211, 0.6);
+        }
+
+        .worker-sam .sprite-name {
+            border-color: #95E1D3;
+            color: #95E1D3;
+            text-shadow: 0 0 5px rgba(149, 225, 211, 0.4);
+        }
+
+        .sprite.player .sprite-char {
+            border-color: #FFD700;
+            width: 56px;
+            height: 56px;
+            animation: player-pulse 0.9s ease-in-out infinite;
+        }
+
+        @keyframes player-pulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 18px rgba(255, 215, 0, 0.9); }
+        }
+
+        .sprite.player .sprite-name {
+            border-color: #FFD700;
+            color: #FFD700;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+        }
+
+        .sprite.npc:hover .sprite-char {
+            transform: scale(1.15);
+            filter: brightness(1.2);
+        }
+
+        /* WORKING ANIMATIONS */
+        .work-bob {
+            animation: work-bob 0.5s ease-in-out infinite;
+        }
+
+        @keyframes work-bob {
+            0%, 100% { transform: translateY(0px) scaleY(1); }
+            50% { transform: translateY(-6px) scaleY(0.95); }
+        }
+
+        .work-spin {
+            animation: work-spin 1s linear infinite;
+        }
+
+        @keyframes work-spin {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(8deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .work-type {
+            animation: work-type 0.4s ease-in-out infinite;
+        }
+
+        @keyframes work-type {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* WORKSTATION ITEMS */
+        .workstation {
+            position: absolute;
+            font-size: 3em;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 2;
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+            animation: workstation-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes workstation-glow {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.35; }
+        }
+
+        /* HUD - stone & brass, matches the sidebar */
+        .hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(180deg, rgba(45, 36, 22, 0.8), rgba(24, 19, 11, 0.85));
+            border: 3px solid #caa66b;
+            border-radius: 0;
+            padding: 15px;
+            font-size: 0.35em;
+            z-index: 50;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .hud-title {
+            color: #ffcf70;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 0 #000;
+            border-bottom: 2px solid #caa66b;
+            padding-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .hud-stat {
+            color: #d8c9a3;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .hud-stat-value {
+            color: #ffb84d;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.97);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            animation: modal-fade-in 0.2s ease-in;
+        }
+
+        @keyframes modal-fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            border: 4px solid #00d4ff;
+            border-radius: 0;
+            padding: 35px;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow:
+                0 0 30px rgba(0, 212, 255, 0.6),
+                inset 0 0 20px rgba(0, 212, 255, 0.1);
+            animation: modal-slide-in 0.2s ease-out;
+        }
+
+        @keyframes modal-slide-in {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 0.7em;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #00ff00;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+        }
+
+        .modal-body {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 0.35em;
+        }
+
+        .modal-portrait {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 10px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            image-rendering: pixelated;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 0.9em;
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
+        }
+
+        .close-btn:hover {
+            color: #ff00ff;
+            transform: scale(1.3);
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+        }
+
+        /* LOADING */
+        .loading {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #00ff00;
+            animation: pulse-load 1s infinite;
+            margin-right: 8px;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+        }
+
+        @keyframes pulse-load {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* SCROLLBAR */
+        .mini-map::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .mini-map::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .mini-map::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00d4ff 0%, #00ff00 100%);
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.4);
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="kingdom-header">
+        <h1 class="kingdom-title">NATHAN'S WORKER KINGDOM</h1>
+    </div>
+    <div class="game-container">
+        <!-- GAME WORLD -->
+        <div class="game-world">
+            <!-- HUD -->
+            <div class="hud">
+                <div class="hud-title">KING NATHAN</div>
+                <div class="hud-stat">POS: <span class="hud-stat-value" id="playerPos">0,0</span></div>
+                <div class="hud-stat">ZONE: <span class="hud-stat-value" id="playerRoom">LOBBY</span></div>
+                <div class="hud-stat">CREW: <span class="hud-stat-value" id="totalWorkers">3</span></div>
+            </div>
+
+            <!-- GAME CANVAS -->
+            <div class="game-canvas" id="gameCanvas"></div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="mini-map">
+            <div class="mini-map-title">CONTROL CENTER</div>
+
+            <!-- ROOM NAVIGATION -->
+            <div class="mini-map-grid">
+                <div class="room-indicator active" onclick="navigateToRoom(0)" data-room="0">
+                    <div class="room-name">GUEST LOBBY</div>
+                    <div class="room-worker">Alex</div>
+                </div>
+                <div class="room-indicator" onclick="navigateToRoom(1)" data-room="1">
+                    <div class="room-name">DESIGN LAB</div>
+                    <div class="room-worker">Maria</div>
+                </div>
+                <div class="room-indicator" onclick="navigateToRoom(2)" data-room="2">
+                    <div class="room-name">RESEARCH HUB</div>
+                    <div class="room-worker">Sam</div>
+                </div>
+            </div>
+
+            <!-- STATS PANEL -->
+            <div class="stats-panel">
+                <div class="stats-title">PRODUCTION</div>
+                <div class="stat">
+                    <span>UPTIME:</span>
+                    <span class="stat-value" id="daysRunning">0</span>
+                </div>
+                <div class="stat">
+                    <span>DESIGNS:</span>
+                    <span class="stat-value" id="designsMade">0</span>
+                </div>
+                <div class="stat">
+                    <span>VIDEOS:</span>
+                    <span class="stat-value" id="videosMade">0</span>
+                </div>
+                <div class="stat">
+                    <span>RESEARCH:</span>
+                    <span class="stat-value" id="insightsMade">0</span>
+                </div>
+            </div>
+
+            <!-- CONTROLS PANEL -->
+            <div class="controls-panel">
+                <div class="control-title">NAVIGATION</div>
+                <div class="movement-keys">
+                    <div class="key"></div>
+                    <div class="key">W</div>
+                    <div class="key"></div>
+                    <div class="key">A</div>
+                    <div class="key">S</div>
+                    <div class="key">D</div>
+                    <div class="key key-spacer">MOVE</div>
+                </div>
+
+                <div class="control-title" style="margin-top: 12px;">COMMANDS</div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="performRoomAction()" id="roomActionBtn">
+                        EXECUTE
+                    </button>
+                    <button class="action-btn" onclick="talkToWorker()" id="talkBtn">
+                        INTERACT
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal" id="actionModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-header" id="modalTitle">PROCESSING</div>
+            <div class="modal-body" id="modalBody">
+                <div style="text-align: center; padding: 20px;">
+                    <div class="loading" style="margin: 0 auto; width: 15px; height: 15px;"></div>
+                    <p>INITIALIZING TASK...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Character portrait images, cropped from the reference cast art
+        const CHARACTER_IMAGES = {
+            Alex: '/static/characters/alex.png',
+            Maria: '/static/characters/maria.png',
+            Sam: '/static/characters/sam.png',
+            King: '/static/characters/nathan.png'
+        };
+
+        // Room background art, indexed to match gameState.rooms / gameState.currentRoom
+        const ROOM_IMAGES = [
+            '/static/rooms/lobby.jpg',
+            '/static/rooms/design.jpg',
+            '/static/rooms/research.jpg'
+        ];
+
+        // OPTIMIZED GAME STATE
+        const gameState = {
+            playerX: 400,
+            playerY: 400,
+            currentRoom: 0,
+            deltaTime: 0,
+            lastTime: Date.now(),
+
+            rooms: [
+                {
+                    name: "GUEST LOBBY & PARLOR",
+                    worker: { name: "Alex", role: "DESIGNER", color: "#FF6B6B", activities: ["analyzing", "sketching", "planning"] },
+                    action: "generate-design",
+                    actionName: "EXECUTE DESIGN",
+                    workstations: [
+                        { x: 150, y: 100, item: "📋", type: "desk" },
+                        { x: 800, y: 150, item: "🖼️", type: "gallery" },
+                        { x: 900, y: 500, item: "🪑", type: "furniture" }
+                    ]
+                },
+                {
+                    name: "DESIGN LAB - LIVE",
+                    worker: { name: "Maria", role: "DIRECTOR", color: "#4ECDC4", activities: ["painting", "creating", "refining"] },
+                    action: "generate-short",
+                    actionName: "EXECUTE CREATION",
+                    workstations: [
+                        { x: 120, y: 180, item: "🎨", type: "easel" },
+                        { x: 850, y: 200, item: "🖌️", type: "tools" },
+                        { x: 500, y: 350, item: "🎭", type: "stage" }
+                    ]
+                },
+                {
+                    name: "RESEARCH HUB - ANALYZE",
+                    worker: { name: "Sam", role: "ANALYST", color: "#95E1D3", activities: ["analyzing", "typing", "investigating"] },
+                    action: "analyze",
+                    actionName: "EXECUTE ANALYSIS",
+                    workstations: [
+                        { x: 180, y: 150, item: "📊", type: "charts" },
+                        { x: 820, y: 180, item: "🔬", type: "lab" },
+                        { x: 500, y: 320, item: "📈", type: "graphs" }
+                    ]
+                }
+            ],
+
+            stats: {
+                daysRunning: 0,
+                designsMade: 0,
+                videosMade: 0,
+                insightsMade: 0
+            },
+
+            workers: [
+                {
+                    name: "Alex",
+                    room: 0,
+                    x: 350,
+                    y: 300,
+                    vx: 0,
+                    vy: 0,
+                    targetX: 350,
+                    targetY: 300,
+                    role: "DESIGNER",
+                    color: "#FF6B6B",
+                    activity: "sketching",
+                    activityTimer: 0,
+                    moveTimer: 0,
+                    speed: 90 // px/sec
+                },
+                {
+                    name: "Maria",
+                    room: 1,
+                    x: 400,
+                    y: 280,
+                    vx: 0,
+                    vy: 0,
+                    targetX: 400,
+                    targetY: 280,
+                    role: "DIRECTOR",
+                    color: "#4ECDC4",
+                    activity: "painting",
+                    activityTimer: 0,
+                    moveTimer: 0,
+                    speed: 78
+                },
+                {
+                    name: "Sam",
+                    room: 2,
+                    x: 380,
+                    y: 320,
+                    vx: 0,
+                    vy: 0,
+                    targetX: 380,
+                    targetY: 320,
+                    role: "ANALYST",
+                    color: "#95E1D3",
+                    activity: "analyzing",
+                    activityTimer: 0,
+                    moveTimer: 0,
+                    speed: 84
+                }
+            ],
+
+            keys: {},
+            particles: []
+        };
+
+        // INITIALIZATION
+        window.addEventListener('load', () => {
+            initGame();
+            updateUI();
+            gameState.workers.forEach(syncSidebarLabel);
+            gameState.workers.forEach(pickNewTarget);
+            setInterval(updateFactoryStatus, 5000);
+            gameState.lastTime = Date.now();
+            gameLoop();
+        });
+
+        function initGame() {
+            document.addEventListener('keydown', (e) => {
+                gameState.keys[e.key.toLowerCase()] = true;
+            });
+            document.addEventListener('keyup', (e) => {
+                gameState.keys[e.key.toLowerCase()] = false;
+            });
+        }
+
+        // MAIN LOOP - runs on requestAnimationFrame, paced by real elapsed
+        // time (deltaTime) so movement/timers stay consistent regardless of
+        // display refresh rate.
+        function gameLoop() {
+            const currentTime = Date.now();
+            gameState.deltaTime = (currentTime - gameState.lastTime) / 1000;
+            gameState.lastTime = currentTime;
+
+            updatePlayerPosition();
+            updateWorkerPosition();
+            updateWorkerActivity();
+            render();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // SMOOTH PLAYER MOVEMENT
+        function updatePlayerPosition() {
+            const speed = 250; // pixels per second
+            const dt = gameState.deltaTime;
+
+            if (gameState.keys['w'] || gameState.keys['arrowup']) gameState.playerY -= speed * dt;
+            if (gameState.keys['s'] || gameState.keys['arrowdown']) gameState.playerY += speed * dt;
+            if (gameState.keys['a'] || gameState.keys['arrowleft']) gameState.playerX -= speed * dt;
+            if (gameState.keys['d'] || gameState.keys['arrowright']) gameState.playerX += speed * dt;
+
+            const canvas = document.getElementById('gameCanvas');
+            gameState.playerX = Math.max(30, Math.min(canvas.clientWidth - 30, gameState.playerX));
+            gameState.playerY = Math.max(30, Math.min(canvas.clientHeight - 30, gameState.playerY));
+
+            document.getElementById('playerPos').textContent =
+                `${Math.round(gameState.playerX)},${Math.round(gameState.playerY)}`;
+        }
+
+        // SMOOTH WORKER PATHFINDING - walk to a workstation, pause, retarget
+        function updateWorkerPosition() {
+            const canvas = document.getElementById('gameCanvas');
+            const canvasRect = canvas.getBoundingClientRect();
+            const width = canvasRect.width;
+            const height = canvasRect.height;
+            const dt = gameState.deltaTime;
+
+            gameState.workers.forEach((worker) => {
+                if (worker.room === gameState.currentRoom) {
+                    worker.moveTimer += dt;
+
+                    // Pick a new destination every 2-3 seconds
+                    if (worker.moveTimer > 2 + Math.random()) {
+                        pickNewTarget(worker);
+                        worker.moveTimer = 0;
+                    }
+
+                    // Smooth movement toward target
+                    const dx = worker.targetX - worker.x;
+                    const dy = worker.targetY - worker.y;
+                    const distance = Math.hypot(dx, dy);
+
+                    if (distance > 10) {
+                        const angle = Math.atan2(dy, dx);
+                        worker.vx = Math.cos(angle) * worker.speed;
+                        worker.vy = Math.sin(angle) * worker.speed;
+                    } else {
+                        // Ease to a stop - damping normalized to elapsed time so it
+                        // decays at the same rate regardless of frame rate.
+                        const damping = Math.pow(0.9, dt * 60);
+                        worker.vx *= damping;
+                        worker.vy *= damping;
+                    }
+
+                    worker.x += worker.vx * dt;
+                    worker.y += worker.vy * dt;
+
+                    // Keep in bounds
+                    worker.x = Math.max(50, Math.min(width - 50, worker.x));
+                    worker.y = Math.max(50, Math.min(height - 50, worker.y));
+                }
+            });
+        }
+
+        // Send a worker to a random workstation in their room (with a little
+        // jitter so they don't stand in the exact same spot every visit)
+        function pickNewTarget(worker) {
+            const stations = gameState.rooms[worker.room].workstations;
+            if (!stations || !stations.length) return;
+            const station = stations[Math.floor(Math.random() * stations.length)];
+            worker.targetX = station.x + (Math.random() - 0.5) * 80;
+            worker.targetY = station.y + (Math.random() - 0.5) * 80;
+        }
+
+        // WORKER ACTIVITY SYSTEM
+        function updateWorkerActivity() {
+            gameState.workers.forEach((worker) => {
+                worker.activityTimer += gameState.deltaTime;
+
+                // Switch activities every 3-5 seconds
+                if (worker.activityTimer > 3 + Math.random() * 2) {
+                    const activities = gameState.rooms[worker.room].worker.activities;
+                    worker.activity = activities[Math.floor(Math.random() * activities.length)];
+                    worker.activityTimer = 0;
+                    syncSidebarLabel(worker);
+                }
+            });
+        }
+
+        // Keep the sidebar room card's "Name - activity" label in sync with a worker's state
+        function syncSidebarLabel(worker) {
+            const idx = gameState.workers.indexOf(worker);
+            const el = document.querySelectorAll('.room-worker')[idx];
+            if (el) el.textContent = `${worker.name} - ${worker.activity}`;
+        }
+
+        // RENDERING
+        function render() {
+            const canvas = document.getElementById('gameCanvas');
+            canvas.innerHTML = '';
+
+            // Background - real room art
+            const bgDiv = document.createElement('div');
+            bgDiv.className = 'room-bg';
+            bgDiv.style.backgroundImage = `url(${ROOM_IMAGES[gameState.currentRoom]})`;
+            canvas.appendChild(bgDiv);
+
+            // Workstations
+            const room = gameState.rooms[gameState.currentRoom];
+            if (room.workstations) {
+                room.workstations.forEach((station) => {
+                    const stationDiv = document.createElement('div');
+                    stationDiv.className = 'workstation';
+                    stationDiv.style.left = station.x + 'px';
+                    stationDiv.style.top = station.y + 'px';
+                    stationDiv.textContent = station.item;
+                    canvas.appendChild(stationDiv);
+                });
+            }
+
+            // Workers
+            gameState.workers.forEach((worker) => {
+                if (worker.room === gameState.currentRoom) {
+                    renderWorker(canvas, worker);
+                }
+            });
+
+            // Player
+            renderPlayer(canvas);
+
+            document.getElementById('playerRoom').textContent = gameState.rooms[gameState.currentRoom].name;
+        }
+
+        function renderWorker(canvas, worker) {
+            const workerDiv = document.createElement('div');
+            workerDiv.className = `sprite npc worker-${worker.name.toLowerCase()}`;
+            workerDiv.style.left = worker.x + 'px';
+            workerDiv.style.top = worker.y + 'px';
+
+            if (worker.activity === "typing" || worker.activity === "analyzing") {
+                workerDiv.classList.add('work-type');
+            } else if (worker.activity === "painting" || worker.activity === "creating" || worker.activity === "drawing" || worker.activity === "refining") {
+                workerDiv.classList.add('work-spin');
+            } else {
+                workerDiv.classList.add('work-bob');
+            }
+
+            workerDiv.onclick = (e) => {
+                e.stopPropagation();
+                showWorkerDialog(worker);
+            };
+
+            const charDiv = document.createElement('div');
+            charDiv.className = 'sprite-char';
+            charDiv.style.backgroundImage = `url(${CHARACTER_IMAGES[worker.name]})`;
+
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'sprite-name';
+            nameDiv.textContent = worker.name.toUpperCase();
+
+            const activityDiv = document.createElement('div');
+            activityDiv.className = 'sprite-activity';
+            const activityEmojis = {
+                "typing": "⌨️", "painting": "🎨", "creating": "🖌️", "drawing": "✏️", "refining": "✨",
+                "analyzing": "🔍", "sketching": "📐", "planning": "📋", "investigating": "🔬", "browsing": "👀"
+            };
+            activityDiv.textContent = activityEmojis[worker.activity] || "⚙️";
+
+            workerDiv.appendChild(activityDiv);
+            workerDiv.appendChild(charDiv);
+            workerDiv.appendChild(nameDiv);
+            canvas.appendChild(workerDiv);
+        }
+
+        function renderPlayer(canvas) {
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'sprite player';
+            playerDiv.style.left = gameState.playerX + 'px';
+            playerDiv.style.top = gameState.playerY + 'px';
+
+            const charDiv = document.createElement('div');
+            charDiv.className = 'sprite-char';
+            charDiv.style.backgroundImage = `url(${CHARACTER_IMAGES.King})`;
+
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'sprite-name';
+            nameDiv.textContent = 'NATHAN BOSS';
+
+            playerDiv.appendChild(charDiv);
+            playerDiv.appendChild(nameDiv);
+            canvas.appendChild(playerDiv);
+        }
+
+        // ROOM NAVIGATION
+        function navigateToRoom(roomIndex) {
+            gameState.currentRoom = roomIndex;
+            gameState.playerX = 400;
+            gameState.playerY = 400;
+
+            document.querySelectorAll('.room-indicator').forEach((el, i) => {
+                el.classList.toggle('active', i === roomIndex);
+            });
+
+            const room = gameState.rooms[roomIndex];
+            document.getElementById('roomActionBtn').textContent = room.actionName;
+
+            render();
+        }
+
+        // ACTIONS
+        function performRoomAction() {
+            const room = gameState.rooms[gameState.currentRoom];
+            showActionModal(room);
+        }
+
+        function talkToWorker() {
+            const worker = gameState.workers[gameState.currentRoom];
+            showWorkerDialog(worker);
+        }
+
+        async function showActionModal(room) {
+            document.getElementById('actionModal').classList.add('active');
+            document.getElementById('modalTitle').textContent = `${room.actionName} - ${room.worker.name.toUpperCase()}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="modal-portrait" style="background-image: url(${CHARACTER_IMAGES[room.worker.name]});"></div>
+                    <div class="loading" style="margin: 0 auto; width: 15px; height: 15px;"></div>
+                    <p style="font-size: 0.4em;">TASK INITIALIZATION...</p>
+                </div>
+            `;
+
+            try {
+                const endpoint = room.action === 'generate-design' ? '/api/etsy/generate-design' :
+                                room.action === 'generate-short' ? '/api/youtube/generate-short' :
+                                '/api/research/analyze';
+
+                const response = await fetch(endpoint);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    updateStats(room.action);
+                    showSuccessModal(room, data.data);
+                } else {
+                    document.getElementById('modalBody').innerHTML =
+                        `<p style="color: #ff4444; font-size: 0.4em;">ERROR: TASK FAILED. TRY AGAIN.</p>`;
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML =
+                    '<p style="color: #ff4444; font-size: 0.4em;">ERROR: SERVER OFFLINE</p>';
+            }
+        }
+
+        function showSuccessModal(room, data) {
+            let content = `<div style="text-align: center; margin-bottom: 20px;">
+                <div class="modal-portrait" style="background-image: url(${CHARACTER_IMAGES[room.worker.name]});"></div>
+                <h3 style="color: #00ff00; margin-bottom: 10px; font-size: 0.6em; text-shadow: 0 0 10px rgba(0, 255, 0, 0.4);">TASK COMPLETE</h3>
+                <p style="color: #00d4ff; font-weight: bold; font-size: 0.4em;">${room.worker.name.toUpperCase()} - ${room.worker.role}</p>
+            </div>`;
+
+            if (data.ideas || data.scripts || data.insights) {
+                const info = data.ideas || data.scripts || data.insights;
+                content += `<pre style="background: rgba(0, 255, 0, 0.1); padding: 15px; border: 1px solid rgba(0, 255, 0, 0.3); overflow-x: auto; color: #00d4ff; max-height: 300px; font-size: 0.3em;">
+${JSON.stringify(info, null, 2).substring(0, 800)}...</pre>`;
+            }
+
+            document.getElementById('modalBody').innerHTML = content;
+        }
+
+        function showWorkerDialog(worker) {
+            const activityDescriptions = {
+                "typing": "PROCESSING DATA...", "painting": "CRAFTING VISUAL MAGIC...", "creating": "BRINGING IDEAS TO LIFE...",
+                "drawing": "SKETCHING BRILLIANCE...", "refining": "PERFECTING THE DETAILS...", "analyzing": "INVESTIGATING PATTERNS...",
+                "sketching": "DRAFTING DESIGNS...", "planning": "STRATEGIZING MOVES...", "investigating": "RESEARCHING FINDINGS...",
+                "browsing": "STUDYING TRENDS..."
+            };
+
+            document.getElementById('actionModal').classList.add('active');
+            document.getElementById('modalTitle').textContent = `COMM - ${worker.name.toUpperCase()}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="modal-portrait" style="background-image: url(${CHARACTER_IMAGES[worker.name]});"></div>
+                    <p style="color: #00d4ff; margin-bottom: 15px; font-size: 0.4em;"><strong>${worker.name.toUpperCase()}</strong></p>
+                    <p style="margin-bottom: 10px; font-size: 0.4em; color: #95E1D3;">█ ${activityDescriptions[worker.activity]}</p>
+                    <p style="color: #00ff00; margin-top: 20px; font-size: 0.4em;">TASKS EXECUTED: ${Math.floor(Math.random() * 50) + 10}</p>
+                    <p style="color: #ff00ff; margin-top: 8px; font-size: 0.4em;">EFFICIENCY: ${Math.floor(Math.random() * 100) + 50}%</p>
+                    <p style="color: ${worker.color}; margin-top: 15px; font-size: 0.35em; border-top: 1px solid ${worker.color}; padding-top: 10px; letter-spacing: 1px;">
+                    STATUS: ${worker.activity.toUpperCase()}</p>
+                </div>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('actionModal').classList.remove('active');
+        }
+
+        function updateStats(action) {
+            if (action === 'generate-design') gameState.stats.designsMade++;
+            else if (action === 'generate-short') gameState.stats.videosMade++;
+            else if (action === 'analyze') gameState.stats.insightsMade++;
+            updateUI();
+        }
+
+        async function updateFactoryStatus() {
+            try {
+                const response = await fetch('/api/factory-status');
+                const data = await response.json();
+
+                gameState.stats.daysRunning = data.days_running;
+                data.workers.forEach((worker, index) => {
+                    if (worker.metrics) {
+                        if (index === 0) gameState.stats.designsMade = worker.metrics.designs_created || 0;
+                        else if (index === 1) gameState.stats.videosMade = worker.metrics.shorts_created || 0;
+                        else if (index === 2) gameState.stats.insightsMade = worker.metrics.insights_generated || 0;
+                    }
+                });
+
+                updateUI();
+            } catch (error) {
+                console.error('Error updating:', error);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('daysRunning').textContent = gameState.stats.daysRunning;
+            document.getElementById('designsMade').textContent = gameState.stats.designsMade;
+            document.getElementById('videosMade').textContent = gameState.stats.videosMade;
+            document.getElementById('insightsMade').textContent = gameState.stats.insightsMade;
+        }
+
+        window.onclick = (event) => {
+            const modal = document.getElementById('actionModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>

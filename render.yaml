@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: claude-ai-factory-dashboard
+    runtime: python
+    plan: free
+    rootDir: dashboard
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FACTORY_ENV
+        value: production
+      - key: ANTHROPIC_API_KEY
+        sync: false
