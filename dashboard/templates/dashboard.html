@@ -304,11 +304,8 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15em;
-            opacity: 0.05;
+            background-size: cover;
+            background-position: center;
             z-index: 0;
         }
 
@@ -574,6 +571,13 @@
             King: '/static/characters/nathan.png'
         };
 
+        // Room background art, indexed to match gameState.rooms / gameState.currentRoom
+        const ROOM_IMAGES = [
+            '/static/rooms/lobby.jpg',
+            '/static/rooms/design.jpg',
+            '/static/rooms/research.jpg'
+        ];
+
         // GAME STATE
         const gameState = {
             playerX: 400,
@@ -674,8 +678,7 @@
             // Background
             const bgDiv = document.createElement('div');
             bgDiv.className = 'room-bg';
-            bgDiv.textContent = gameState.currentRoom === 0 ? '[LOBBY]' :
-                                gameState.currentRoom === 1 ? '[DESIGN]' : '[LAB]';
+            bgDiv.style.backgroundImage = `url(${ROOM_IMAGES[gameState.currentRoom]})`;
             canvas.appendChild(bgDiv);
 
             // Draw workers
