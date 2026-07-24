@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claude AI Factory - Game Edition 🏭</title>
+    <title>Claude AI Factory - Game Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,30 +13,33 @@
         }
 
         body {
-            font-family: 'Arial', monospace;
+            font-family: 'Press Start 2P', cursive;
             background: #0a0a0a;
             color: #e0e0e0;
             overflow: hidden;
+            background-image:
+                linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.05) 75%, rgba(0, 255, 0, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.05) 75%, rgba(0, 255, 0, 0.05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
         }
 
         .game-container {
             width: 100vw;
             height: 100vh;
             display: flex;
-            gap: 10px;
-            padding: 10px;
+            gap: 0;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
         /* MAIN GAME WORLD */
         .game-world {
             flex: 1;
-            background: linear-gradient(180deg, #0f1419 0%, #1a1f3a 100%);
-            border: 3px solid #00ff00;
-            border-radius: 10px;
+            background: linear-gradient(180deg, #0a0e27 0%, #1a2a4a 100%);
+            border: 4px solid #00ff00;
+            border-radius: 0;
             position: relative;
             overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
+            box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.3);
         }
 
         .game-canvas {
@@ -45,96 +49,118 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 0, 0.02) 0px,
+                    rgba(0, 255, 0, 0.02) 2px,
+                    transparent 2px,
+                    transparent 4px
+                );
         }
 
-        /* MINI MAP */
+        /* MINI MAP SIDEBAR */
         .mini-map {
-            width: 250px;
+            width: 280px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
             background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
-            border: 2px solid #00d4ff;
-            border-radius: 8px;
-            padding: 15px;
+            border: 4px solid #00d4ff;
+            border-radius: 0;
+            padding: 20px;
             overflow-y: auto;
+            border-left: none;
         }
 
         .mini-map-title {
             color: #00d4ff;
             font-weight: bold;
             text-align: center;
-            border-bottom: 2px solid #00d4ff;
-            padding-bottom: 10px;
+            border-bottom: 3px dashed #00d4ff;
+            padding-bottom: 15px;
             margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            font-size: 0.6em;
         }
 
         .mini-map-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 15px;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .room-indicator {
-            aspect-ratio: 1;
-            border: 2px solid #00ff00;
-            border-radius: 5px;
+            border: 3px solid #00ff00;
+            border-radius: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 5px;
-            font-size: 0.8em;
+            gap: 8px;
+            font-size: 0.5em;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.1s;
             background: rgba(0, 255, 0, 0.05);
-            padding: 5px;
+            padding: 12px;
             text-align: center;
+            aspect-ratio: auto;
+            min-height: 80px;
         }
 
         .room-indicator:hover {
             background: rgba(0, 255, 0, 0.15);
-            transform: scale(1.05);
+            transform: scale(1.02);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
         }
 
         .room-indicator.active {
             border-color: #ff00ff;
             background: rgba(255, 0, 255, 0.2);
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
         }
 
         .room-icon {
-            font-size: 1.5em;
+            font-size: 2em;
         }
 
         .room-name {
             color: #00d4ff;
-            font-size: 0.7em;
+            font-size: 0.5em;
             font-weight: bold;
+            letter-spacing: 2px;
         }
 
-        .room-workers {
+        .room-worker {
             color: #00ff00;
-            font-size: 0.65em;
+            font-size: 0.4em;
         }
 
         /* STATS PANEL */
         .stats-panel {
-            background: rgba(0, 255, 0, 0.05);
-            border: 2px solid #00ff00;
-            border-radius: 5px;
-            padding: 10px;
-            margin-top: 10px;
+            background: rgba(0, 255, 0, 0.08);
+            border: 3px solid #00ff00;
+            border-radius: 0;
+            padding: 12px;
+            margin-top: 15px;
+        }
+
+        .stats-title {
+            color: #00ff00;
+            font-size: 0.4em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 8px;
+            letter-spacing: 2px;
         }
 
         .stat {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 0.85em;
+            margin-bottom: 8px;
+            font-size: 0.35em;
             color: #00d4ff;
         }
 
@@ -143,121 +169,120 @@
             font-weight: bold;
         }
 
-        /* CONTROLS */
+        /* CONTROLS PANEL */
         .controls-panel {
-            background: rgba(255, 0, 255, 0.05);
-            border: 2px solid #ff00ff;
-            border-radius: 5px;
-            padding: 10px;
-            margin-top: 10px;
+            background: rgba(255, 0, 255, 0.08);
+            border: 3px solid #ff00ff;
+            border-radius: 0;
+            padding: 12px;
+            margin-top: 15px;
         }
 
         .control-title {
             color: #ff00ff;
-            font-size: 0.8em;
+            font-size: 0.4em;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #ff00ff;
+            padding-bottom: 8px;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .movement-keys {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .key {
             background: linear-gradient(135deg, #ff00ff 0%, #ff6600 100%);
-            border: 1px solid #ff00ff;
-            border-radius: 3px;
+            border: 2px solid #ff00ff;
+            border-radius: 0;
             padding: 6px;
             text-align: center;
-            font-size: 0.75em;
+            font-size: 0.35em;
             font-weight: bold;
             color: #fff;
         }
 
         .key-spacer {
             grid-column: 1 / 4;
+            font-size: 0.3em;
         }
 
         .action-buttons {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .action-btn {
             background: linear-gradient(90deg, #00d4ff 0%, #00ff00 100%);
-            border: 1px solid #00d4ff;
-            border-radius: 3px;
-            padding: 8px;
-            font-size: 0.75em;
+            border: 2px solid #00d4ff;
+            border-radius: 0;
+            padding: 10px;
+            font-size: 0.3em;
             font-weight: bold;
             color: #000;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.1s;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Press Start 2P', cursive;
         }
 
         .action-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
         }
 
         .action-btn:active {
             transform: scale(0.95);
         }
 
-        .action-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* PIXEL ART SPRITES */
+        /* PIXEL SPRITES */
         .sprite {
             position: absolute;
-            font-size: 2em;
             user-select: none;
             font-family: 'Courier New', monospace;
             line-height: 1;
-        }
-
-        .sprite img {
-            display: block;
-            height: 64px;
-            width: auto;
-            image-rendering: pixelated;
-            user-select: none;
-            pointer-events: none;
-        }
-
-        .sprite.player {
-            font-size: 2.5em;
-            z-index: 100;
-            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8));
-        }
-
-        .sprite.player img {
-            height: 80px;
-        }
-
-        .sprite.npc {
-            animation: float 3s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             cursor: pointer;
         }
 
-        .portrait-img {
-            height: 140px;
-            width: auto;
+        .sprite-image {
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
             image-rendering: pixelated;
-            margin: 0 auto;
-            display: block;
+            margin-bottom: 2px;
         }
 
-        .portrait-img.small {
-            height: 64px;
+        .sprite-name {
+            font-size: 0.5em;
+            font-family: 'Press Start 2P', cursive;
+            color: #FFD700;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 4px;
+            border: 1px solid #FFD700;
+            white-space: nowrap;
+        }
+
+        .sprite.player .sprite-name {
+            color: #FFD700;
+            border-color: #FFD700;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+        }
+
+        .sprite.player .sprite-image {
+            width: 52px;
+            height: 52px;
         }
 
         .sprite.npc:hover {
@@ -267,82 +292,11 @@
 
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-5px); }
         }
 
-        /* ROOM DECORATION */
-        .room-decoration {
-            position: absolute;
-            font-size: 1.5em;
-            opacity: 0.3;
-        }
-
-        /* CONNECTION PATHS */
-        svg.paths {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* MODAL FOR ACTIONS */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
-            border: 3px solid #00d4ff;
-            border-radius: 10px;
-            padding: 30px;
-            max-width: 700px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-        }
-
-        .modal-header {
-            font-size: 1.5em;
-            color: #00d4ff;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #00ff00;
-            padding-bottom: 10px;
-        }
-
-        .modal-body {
-            color: #e0e0e0;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .close-btn {
-            float: right;
-            font-size: 1.5em;
-            color: #00ff00;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .close-btn:hover {
-            color: #ff00ff;
-            transform: scale(1.2);
+        .sprite.npc {
+            animation: float 3s ease-in-out infinite;
         }
 
         /* ROOM BACKGROUND */
@@ -353,34 +307,36 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8em;
-            opacity: 0.1;
+            font-size: 15em;
+            opacity: 0.05;
             z-index: 0;
         }
 
         /* HUD */
         .hud {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 212, 255, 0.1);
-            border: 2px solid #00d4ff;
-            border-radius: 5px;
-            padding: 10px;
-            font-size: 0.85em;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 212, 255, 0.15);
+            border: 3px solid #00d4ff;
+            border-radius: 0;
+            padding: 12px;
+            font-size: 0.4em;
             z-index: 50;
         }
 
         .hud-title {
             color: #FFD700;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 5px;
         }
 
         .hud-stat {
             color: #00d4ff;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         .hud-stat-value {
@@ -388,39 +344,96 @@
             font-weight: bold;
         }
 
-        /* WORKER NAME LABEL */
-        .worker-label {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: #FFD700;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 0.7em;
-            font-weight: bold;
-            white-space: nowrap;
-            border: 1px solid #FFD700;
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            border: 4px solid #00d4ff;
+            border-radius: 0;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
+        }
+
+        .modal-header {
+            font-size: 0.8em;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #00ff00;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .modal-body {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 0.4em;
+        }
+
+        .modal-portrait {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 10px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            image-rendering: pixelated;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 1em;
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .close-btn:hover {
+            color: #ff00ff;
+            transform: scale(1.2);
         }
 
         /* SCROLLBAR */
         .mini-map::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         .mini-map::-webkit-scrollbar-track {
             background: rgba(0, 212, 255, 0.1);
-            border-radius: 5px;
         }
 
         .mini-map::-webkit-scrollbar-thumb {
             background: #00d4ff;
-            border-radius: 5px;
+            border: 1px solid #00ff00;
         }
 
-        .mini-map::-webkit-scrollbar-thumb:hover {
-            background: #00ff00;
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #00d4ff;
         }
 
         /* LOADING ANIMATION */
@@ -428,7 +441,7 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            border-radius: 50%;
+            border-radius: 0;
             background: #00ff00;
             animation: pulse 1s infinite;
             margin-right: 5px;
@@ -439,31 +452,17 @@
             50% { opacity: 0.3; }
         }
 
-        /* INTERACTION HINT */
-        .interaction-hint {
+        /* ROOM DECORATIONS */
+        .room-item {
             position: absolute;
-            background: rgba(255, 0, 255, 0.2);
-            border: 1px solid #ff00ff;
-            border-radius: 5px;
-            padding: 8px 12px;
-            font-size: 0.8em;
-            color: #ff00ff;
+            font-size: 3em;
+            opacity: 0.15;
             pointer-events: none;
-            animation: pulse-hint 1s infinite;
         }
 
-        @keyframes pulse-hint {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .press-e {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-top: 5px;
-            font-size: 0.75em;
+        /* TEXT STYLING */
+        .text-pixel {
+            font-family: 'Press Start 2P', cursive;
         }
     </style>
 </head>
@@ -473,67 +472,62 @@
         <div class="game-world">
             <!-- HUD -->
             <div class="hud">
-                <div class="hud-title">👑 Nathan King (Boss)</div>
-                <div class="hud-stat">Position: <span class="hud-stat-value" id="playerPos">0, 0</span></div>
-                <div class="hud-stat">Room: <span class="hud-stat-value" id="playerRoom">Factory</span></div>
-                <div class="hud-stat">Workers: <span class="hud-stat-value" id="totalWorkers">3</span></div>
+                <div class="hud-title">NATHAN KING</div>
+                <div class="hud-stat">POS: <span class="hud-stat-value" id="playerPos">0,0</span></div>
+                <div class="hud-stat">ROOM: <span class="hud-stat-value" id="playerRoom">LOBBY</span></div>
+                <div class="hud-stat">WORKERS: <span class="hud-stat-value" id="totalWorkers">3</span></div>
             </div>
-
-            <!-- SVG FOR PATHS -->
-            <svg class="paths" id="pathsSvg"></svg>
 
             <!-- GAME CANVAS -->
             <div class="game-canvas" id="gameCanvas">
-                <div class="room-bg" id="roomBg">🏭</div>
+                <div class="room-bg" id="roomBg">WORK</div>
             </div>
         </div>
 
         <!-- SIDEBAR -->
         <div class="mini-map">
-            <div class="mini-map-title">⛏️ Factory Control</div>
+            <div class="mini-map-title">FACTORY CONTROL</div>
 
-            <!-- MINIMAP GRID -->
+            <!-- ROOM NAVIGATION -->
             <div class="mini-map-grid">
                 <div class="room-indicator active" onclick="navigateToRoom(0)" data-room="0">
-                    <div class="room-icon">🛍️</div>
-                    <div class="room-name">Etsy Mine</div>
-                    <div class="room-workers" id="workerCount0">1</div>
+                    <div class="room-name">GUEST LOBBY</div>
+                    <div class="room-worker">Alex</div>
                 </div>
                 <div class="room-indicator" onclick="navigateToRoom(1)" data-room="1">
-                    <div class="room-icon">🎬</div>
-                    <div class="room-name">YT Studio</div>
-                    <div class="room-workers" id="workerCount1">1</div>
+                    <div class="room-name">DESIGN LAB</div>
+                    <div class="room-worker">Maria</div>
                 </div>
                 <div class="room-indicator" onclick="navigateToRoom(2)" data-room="2">
-                    <div class="room-icon">🔬</div>
-                    <div class="room-name">Lab</div>
-                    <div class="room-workers" id="workerCount2">1</div>
+                    <div class="room-name">RESEARCH</div>
+                    <div class="room-worker">Sam</div>
                 </div>
             </div>
 
             <!-- STATS PANEL -->
             <div class="stats-panel">
+                <div class="stats-title">FACTORY STATS</div>
                 <div class="stat">
-                    <span>Days Running:</span>
+                    <span>DAYS:</span>
                     <span class="stat-value" id="daysRunning">0</span>
                 </div>
                 <div class="stat">
-                    <span>Designs Made:</span>
+                    <span>DESIGNS:</span>
                     <span class="stat-value" id="designsMade">0</span>
                 </div>
                 <div class="stat">
-                    <span>Videos Made:</span>
+                    <span>VIDEOS:</span>
                     <span class="stat-value" id="videosMade">0</span>
                 </div>
                 <div class="stat">
-                    <span>Insights:</span>
+                    <span>INSIGHTS:</span>
                     <span class="stat-value" id="insightsMade">0</span>
                 </div>
             </div>
 
             <!-- CONTROLS PANEL -->
             <div class="controls-panel">
-                <div class="control-title">Movement Controls</div>
+                <div class="control-title">MOVE</div>
                 <div class="movement-keys">
                     <div class="key"></div>
                     <div class="key">W</div>
@@ -541,105 +535,68 @@
                     <div class="key">A</div>
                     <div class="key">S</div>
                     <div class="key">D</div>
-                    <div class="key key-spacer">MOVE AROUND</div>
+                    <div class="key key-spacer">ARROW KEYS</div>
                 </div>
 
-                <div class="control-title" style="margin-top: 10px;">Actions</div>
+                <div class="control-title" style="margin-top: 15px;">ACTIONS</div>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="performRoomAction()" id="roomActionBtn">
-                        🔄 Generate
+                        EXECUTE
                     </button>
                     <button class="action-btn" onclick="talkToWorker()" id="talkBtn">
-                        💬 Talk to Worker
-                    </button>
-                    <button class="action-btn" onclick="goBack()" style="margin-top: 10px;">
-                        🔙 Main Hub
+                        TALK
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODALS -->
+    <!-- MODAL -->
     <div class="modal" id="actionModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div class="modal-header" id="modalTitle">Action Complete</div>
+            <div class="modal-header" id="modalTitle">PROCESSING</div>
             <div class="modal-body" id="modalBody">
                 <div style="text-align: center; padding: 20px;">
-                    <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
-                    <p>Processing...</p>
+                    <div class="loading" style="margin: 0 auto; width: 15px; height: 15px;"></div>
+                    <p>GENERATING...</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============ PIXEL ART WORKER SPRITES ============
-        const PIXEL_SPRITES = {
-            // Alex - Green shirt, dark hair
-            alex: {
-                emoji: "🧑‍💻",
-                img: "/static/characters/alex.png",
-                name: "Alex",
-                color: "#FF6B6B",
-                char: "A"
-            },
-            // Maria - Red shirt, black hair
-            maria: {
-                emoji: "👩‍💼",
-                img: "/static/characters/maria.png",
-                name: "Maria",
-                color: "#4ECDC4",
-                char: "M"
-            },
-            // Sam - Blue shirt, blonde hair
-            sam: {
-                emoji: "👨‍🔧",
-                img: "/static/characters/sam.png",
-                name: "Sam",
-                color: "#95E1D3",
-                char: "S"
-            },
-            // Nathan King - With crown
-            king: {
-                emoji: "👑",
-                img: "/static/characters/nathan.png",
-                name: "Nathan King",
-                color: "#FFD700",
-                char: "K"
-            }
+        // Character portrait images, uploaded earlier and cropped from the reference cast art
+        const CHARACTER_IMAGES = {
+            Alex: '/static/characters/alex.png',
+            Maria: '/static/characters/maria.png',
+            Sam: '/static/characters/sam.png',
+            King: '/static/characters/nathan.png'
         };
 
-        // ============ GAME STATE ============
+        // GAME STATE
         const gameState = {
             playerX: 400,
             playerY: 400,
-            currentRoom: 0, // 0: Etsy, 1: YouTube, 2: Research
+            currentRoom: 0,
             rooms: [
                 {
-                    name: "🛍️ Etsy POD Mine",
-                    icon: "🛍️",
-                    decoration: "👕👔👗",
-                    worker: PIXEL_SPRITES.alex,
+                    name: "GUEST LOBBY & PARLOR",
+                    worker: { name: "Alex", role: "DESIGNER" },
                     action: "generate-design",
-                    actionName: "Generate Design"
+                    actionName: "GENERATE DESIGN"
                 },
                 {
-                    name: "🎬 YouTube Shorts Studio",
-                    icon: "🎬",
-                    decoration: "🎥📹🎞️",
-                    worker: PIXEL_SPRITES.maria,
+                    name: "DESIGN LIVE",
+                    worker: { name: "Maria", role: "DIRECTOR" },
                     action: "generate-short",
-                    actionName: "Generate Short"
+                    actionName: "GENERATE SHORT"
                 },
                 {
-                    name: "🔬 Research Lab",
-                    icon: "🔬",
-                    decoration: "🧪🧬⚗️",
-                    worker: PIXEL_SPRITES.sam,
+                    name: "RESEARCH LOG ANALYZE",
+                    worker: { name: "Sam", role: "ANALYST" },
                     action: "analyze",
-                    actionName: "Analyze Trends"
+                    actionName: "ANALYZE TRENDS"
                 }
             ],
             stats: {
@@ -649,43 +606,14 @@
                 insightsMade: 0
             },
             workers: [
-                {
-                    name: "Alex",
-                    emoji: "🧑‍💻",
-                    img: "/static/characters/alex.png",
-                    room: 0,
-                    x: 300,
-                    y: 300,
-                    color: "#FF6B6B",
-                    description: "Design Expert"
-                },
-                {
-                    name: "Maria",
-                    emoji: "👩‍💼",
-                    img: "/static/characters/maria.png",
-                    room: 1,
-                    x: 300,
-                    y: 300,
-                    color: "#4ECDC4",
-                    description: "Video Director"
-                },
-                {
-                    name: "Sam",
-                    emoji: "👨‍🔧",
-                    img: "/static/characters/sam.png",
-                    room: 2,
-                    x: 300,
-                    y: 300,
-                    color: "#95E1D3",
-                    description: "Research Analyst"
-                }
+                { name: "Alex", room: 0, x: 300, y: 300, role: "DESIGNER" },
+                { name: "Maria", room: 1, x: 300, y: 300, role: "DIRECTOR" },
+                { name: "Sam", room: 2, x: 300, y: 300, role: "ANALYST" }
             ],
-            keys: {},
-            lastInteraction: { worker: -1, time: 0 },
-            inRoom: false
+            keys: {}
         };
 
-        // ============ INITIALIZATION ============
+        // INITIALIZATION
         window.addEventListener('load', () => {
             initGame();
             updateUI();
@@ -695,7 +623,6 @@
         });
 
         function initGame() {
-            // Setup keyboard listeners
             document.addEventListener('keydown', (e) => {
                 gameState.keys[e.key.toLowerCase()] = true;
             });
@@ -703,40 +630,35 @@
                 gameState.keys[e.key.toLowerCase()] = false;
             });
 
-            // Animation loop
             setInterval(() => {
                 updatePlayerPosition();
                 render();
             }, 30);
         }
 
-        // ============ PLAYER MOVEMENT ============
+        // PLAYER MOVEMENT
         function updatePlayerPosition() {
             const speed = 5;
-            if (gameState.keys['w']) gameState.playerY -= speed;
-            if (gameState.keys['s']) gameState.playerY += speed;
-            if (gameState.keys['a']) gameState.playerX -= speed;
-            if (gameState.keys['d']) gameState.playerX += speed;
+            if (gameState.keys['w'] || gameState.keys['arrowup']) gameState.playerY -= speed;
+            if (gameState.keys['s'] || gameState.keys['arrowdown']) gameState.playerY += speed;
+            if (gameState.keys['a'] || gameState.keys['arrowleft']) gameState.playerX -= speed;
+            if (gameState.keys['d'] || gameState.keys['arrowright']) gameState.playerX += speed;
 
-            // Boundary check
             const canvas = document.getElementById('gameCanvas');
             gameState.playerX = Math.max(30, Math.min(canvas.clientWidth - 30, gameState.playerX));
             gameState.playerY = Math.max(30, Math.min(canvas.clientHeight - 30, gameState.playerY));
 
-            // Update HUD
             document.getElementById('playerPos').textContent =
-                `${Math.round(gameState.playerX)}, ${Math.round(gameState.playerY)}`;
+                `${Math.round(gameState.playerX)},${Math.round(gameState.playerY)}`;
         }
 
-        // ============ WORKER ANIMATION ============
+        // WORKER ANIMATION
         function animateWorkers() {
-            gameState.workers.forEach((worker, i) => {
+            gameState.workers.forEach((worker) => {
                 if (worker.room === gameState.currentRoom) {
-                    // Random movement within room
                     worker.x += (Math.random() - 0.5) * 2;
                     worker.y += (Math.random() - 0.5) * 2;
 
-                    // Keep in bounds
                     const canvas = document.getElementById('gameCanvas');
                     worker.x = Math.max(50, Math.min(canvas.clientWidth - 50, worker.x));
                     worker.y = Math.max(50, Math.min(canvas.clientHeight - 50, worker.y));
@@ -744,156 +666,100 @@
             });
         }
 
-        // ============ RENDERING ============
+        // RENDERING
         function render() {
             const canvas = document.getElementById('gameCanvas');
             canvas.innerHTML = '';
 
-            // Room background
+            // Background
             const bgDiv = document.createElement('div');
             bgDiv.className = 'room-bg';
-            bgDiv.textContent = gameState.rooms[gameState.currentRoom].icon;
+            bgDiv.textContent = gameState.currentRoom === 0 ? '[LOBBY]' :
+                                gameState.currentRoom === 1 ? '[DESIGN]' : '[LAB]';
             canvas.appendChild(bgDiv);
 
-            // Draw decorations
-            for (let i = 0; i < 5; i++) {
-                const deco = document.createElement('div');
-                deco.className = 'room-decoration';
-                deco.style.left = (Math.random() * 90 + 5) + '%';
-                deco.style.top = (Math.random() * 90 + 5) + '%';
-                deco.textContent = gameState.rooms[gameState.currentRoom].decoration[
-                    Math.floor(Math.random() * gameState.rooms[gameState.currentRoom].decoration.length)
-                ];
-                canvas.appendChild(deco);
-            }
-
-            // Draw workers in current room
-            gameState.workers.forEach((worker, i) => {
+            // Draw workers
+            gameState.workers.forEach((worker) => {
                 if (worker.room === gameState.currentRoom) {
-                    const spriteContainer = document.createElement('div');
-                    spriteContainer.style.position = 'absolute';
-                    spriteContainer.style.left = worker.x + 'px';
-                    spriteContainer.style.top = worker.y + 'px';
-                    spriteContainer.style.display = 'flex';
-                    spriteContainer.style.flexDirection = 'column';
-                    spriteContainer.style.alignItems = 'center';
-                    spriteContainer.style.cursor = 'pointer';
-
-                    // Label
-                    const label = document.createElement('div');
-                    label.className = 'worker-label';
-                    label.textContent = worker.name;
-                    label.style.color = worker.color;
-                    label.style.borderColor = worker.color;
-                    spriteContainer.appendChild(label);
-
-                    // Sprite
-                    const sprite = document.createElement('div');
-                    sprite.className = 'sprite npc';
-                    if (worker.img) {
-                        const img = document.createElement('img');
-                        img.src = worker.img;
-                        img.alt = worker.name;
-                        sprite.appendChild(img);
-                    } else {
-                        sprite.textContent = worker.emoji;
-                    }
-                    sprite.style.color = worker.color;
-                    sprite.title = `${worker.name} - ${worker.description}`;
-                    sprite.onclick = (e) => {
+                    const spriteDiv = document.createElement('div');
+                    spriteDiv.className = 'sprite npc';
+                    spriteDiv.style.left = worker.x + 'px';
+                    spriteDiv.style.top = worker.y + 'px';
+                    spriteDiv.onclick = (e) => {
                         e.stopPropagation();
                         showWorkerDialog(worker);
                     };
 
-                    spriteContainer.appendChild(sprite);
-                    canvas.appendChild(spriteContainer);
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'sprite-name';
+                    nameDiv.textContent = worker.name.toUpperCase();
+
+                    const imageDiv = document.createElement('div');
+                    imageDiv.className = 'sprite-image';
+                    imageDiv.style.backgroundImage = `url(${CHARACTER_IMAGES[worker.name]})`;
+
+                    spriteDiv.appendChild(nameDiv);
+                    spriteDiv.appendChild(imageDiv);
+                    canvas.appendChild(spriteDiv);
                 }
             });
 
-            // Draw player (Boss with crown)
-            const playerContainer = document.createElement('div');
-            playerContainer.style.position = 'absolute';
-            playerContainer.style.left = gameState.playerX + 'px';
-            playerContainer.style.top = gameState.playerY + 'px';
-            playerContainer.style.display = 'flex';
-            playerContainer.style.flexDirection = 'column';
-            playerContainer.style.alignItems = 'center';
+            // Draw player
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'sprite player';
+            playerDiv.style.left = gameState.playerX + 'px';
+            playerDiv.style.top = gameState.playerY + 'px';
 
-            // Player label
-            const playerLabel = document.createElement('div');
-            playerLabel.className = 'worker-label';
-            playerLabel.textContent = '👑 King';
-            playerLabel.style.color = '#FFD700';
-            playerLabel.style.borderColor = '#FFD700';
-            playerContainer.appendChild(playerLabel);
+            const kingNameDiv = document.createElement('div');
+            kingNameDiv.className = 'sprite-name';
+            kingNameDiv.textContent = 'KING';
 
-            // Player sprite
-            const player = document.createElement('div');
-            player.className = 'sprite player';
-            const kingImg = document.createElement('img');
-            kingImg.src = PIXEL_SPRITES.king.img;
-            kingImg.alt = 'Nathan King';
-            player.appendChild(kingImg);
-            player.style.color = '#FFD700';
-            playerContainer.appendChild(player);
+            const kingImageDiv = document.createElement('div');
+            kingImageDiv.className = 'sprite-image';
+            kingImageDiv.style.backgroundImage = `url(${CHARACTER_IMAGES.King})`;
 
-            canvas.appendChild(playerContainer);
+            playerDiv.appendChild(kingNameDiv);
+            playerDiv.appendChild(kingImageDiv);
+            canvas.appendChild(playerDiv);
 
-            // Update HUD
             document.getElementById('playerRoom').textContent = gameState.rooms[gameState.currentRoom].name;
         }
 
-        // ============ ROOM NAVIGATION ============
+        // ROOM NAVIGATION
         function navigateToRoom(roomIndex) {
             gameState.currentRoom = roomIndex;
             gameState.playerX = 400;
             gameState.playerY = 400;
-            gameState.inRoom = true;
 
-            // Update mini-map
             document.querySelectorAll('.room-indicator').forEach((el, i) => {
                 el.classList.toggle('active', i === roomIndex);
             });
 
-            // Update button
             const room = gameState.rooms[roomIndex];
-            document.getElementById('roomActionBtn').textContent = `🔄 ${room.actionName}`;
+            document.getElementById('roomActionBtn').textContent = room.actionName;
 
             render();
         }
 
-        function goBack() {
-            gameState.inRoom = false;
-            gameState.currentRoom = 0;
-            gameState.playerX = 400;
-            gameState.playerY = 400;
-
-            document.querySelectorAll('.room-indicator').forEach((el, i) => {
-                el.classList.toggle('active', i === 0);
-            });
-
-            render();
-        }
-
-        // ============ ACTIONS ============
+        // ACTIONS
         function performRoomAction() {
             const room = gameState.rooms[gameState.currentRoom];
             showActionModal(room);
         }
 
         function talkToWorker() {
-            const currentWorker = gameState.workers[gameState.currentRoom];
-            showWorkerDialog(currentWorker);
+            const worker = gameState.workers[gameState.currentRoom];
+            showWorkerDialog(worker);
         }
 
         async function showActionModal(room) {
             document.getElementById('actionModal').classList.add('active');
-            document.getElementById('modalTitle').textContent = `⚡ ${room.actionName} - ${room.worker.name}`;
+            document.getElementById('modalTitle').textContent = `${room.actionName} - ${room.worker.name.toUpperCase()}`;
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
-                    <img class="portrait-img small" src="${room.worker.img}" alt="${room.worker.name}" style="margin-bottom: 10px;">
-                    <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
-                    <p>Generating ${room.actionName.toLowerCase()}...</p>
+                    <div class="modal-portrait" style="background-image: url(${CHARACTER_IMAGES[room.worker.name]});"></div>
+                    <div class="loading" style="margin: 0 auto; width: 15px; height: 15px;"></div>
+                    <p>GENERATING...</p>
                 </div>
             `;
 
@@ -910,44 +776,40 @@
                     showSuccessModal(room, data.data);
                 } else {
                     document.getElementById('modalBody').innerHTML =
-                        '<p style="color: #ff4444;">Error generating. Try again!</p>';
+                        `<p style="color: #ff4444; font-size: 0.4em;">ERROR: GENERATION FAILED. TRY AGAIN.</p>`;
                 }
             } catch (error) {
                 document.getElementById('modalBody').innerHTML =
-                    '<p style="color: #ff4444;">Connection error. Make sure server is running!</p>';
+                    '<p style="color: #ff4444; font-size: 0.4em;">ERROR: SERVER NOT RUNNING</p>';
             }
         }
 
         function showSuccessModal(room, data) {
             let content = `<div style="text-align: center; margin-bottom: 15px;">
-                <img class="portrait-img small" src="${room.worker.img}" alt="${room.worker.name}" style="margin-bottom: 10px;">
-                <h3 style="color: #00ff00; margin-bottom: 10px;">✅ ${room.actionName} Complete!</h3>
-                <p style="color: ${room.worker.color}; font-weight: bold;">${room.worker.name} just finished!</p>
+                <div class="modal-portrait" style="background-image: url(${CHARACTER_IMAGES[room.worker.name]});"></div>
+                <h3 style="color: #00ff00; margin-bottom: 10px; font-size: 0.6em;">COMPLETE</h3>
+                <p style="color: #00d4ff; font-weight: bold; font-size: 0.4em;">${room.worker.name.toUpperCase()} - ${room.worker.role}</p>
             </div>`;
 
             if (data.ideas || data.scripts || data.insights) {
                 const info = data.ideas || data.scripts || data.insights;
-                content += `<pre style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 5px; overflow-x: auto; color: #00d4ff; max-height: 300px;">
-${JSON.stringify(info, null, 2).substring(0, 1000)}...</pre>`;
+                content += `<pre style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 0; overflow-x: auto; color: #00d4ff; max-height: 300px; font-size: 0.3em;">
+${JSON.stringify(info, null, 2).substring(0, 800)}...</pre>`;
             }
-
-            content += `<p style="color: #00d4ff; margin-top: 15px; text-align: center;">
-Keep it up ${room.worker.name}! 💪</p>`;
 
             document.getElementById('modalBody').innerHTML = content;
         }
 
         function showWorkerDialog(worker) {
             document.getElementById('actionModal').classList.add('active');
-            document.getElementById('modalTitle').textContent = `💬 ${worker.name}`;
+            document.getElementById('modalTitle').textContent = `COMM - ${worker.name.toUpperCase()}`;
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
-                    <img class="portrait-img" src="${worker.img}" alt="${worker.name}" style="margin-bottom: 10px;">
-                    <p style="color: ${worker.color}; margin-bottom: 15px;"><strong>${worker.name}</strong></p>
-                    <p style="margin-bottom: 10px;">🗣️ "Hey boss! I'm working hard on the ${gameState.rooms[worker.room].name} tasks!"</p>
-                    <p style="color: #00ff00; margin-top: 15px;">📊 Tasks completed: ${Math.floor(Math.random() * 50) + 10}</p>
-                    <p style="color: #ff00ff; margin-top: 10px;">⚡ Production: ${Math.floor(Math.random() * 100) + 50}%</p>
-                    <p style="color: ${worker.color}; margin-top: 15px; font-size: 0.9em;">Role: ${worker.description}</p>
+                    <div class="modal-portrait" style="background-image: url(${CHARACTER_IMAGES[worker.name]});"></div>
+                    <p style="color: #00d4ff; margin-bottom: 15px; font-size: 0.4em;"><strong>${worker.name.toUpperCase()}</strong></p>
+                    <p style="margin-bottom: 10px; font-size: 0.4em;">BOSS, I'M WORKING ON THE ${gameState.rooms[worker.room].name} TASKS!</p>
+                    <p style="color: #00ff00; margin-top: 15px; font-size: 0.4em;">TASKS DONE: ${Math.floor(Math.random() * 50) + 10}</p>
+                    <p style="color: #ff00ff; margin-top: 10px; font-size: 0.4em;">EFFICIENCY: ${Math.floor(Math.random() * 100) + 50}%</p>
                 </div>
             `;
         }
@@ -963,7 +825,6 @@ Keep it up ${room.worker.name}! 💪</p>`;
             updateUI();
         }
 
-        // ============ UI UPDATES ============
         async function updateFactoryStatus() {
             try {
                 const response = await fetch('/api/factory-status');
@@ -981,7 +842,7 @@ Keep it up ${room.worker.name}! 💪</p>`;
 
                 updateUI();
             } catch (error) {
-                console.error('Error updating status:', error);
+                console.error('Error updating:', error);
             }
         }
 
@@ -992,7 +853,6 @@ Keep it up ${room.worker.name}! 💪</p>`;
             document.getElementById('insightsMade').textContent = gameState.stats.insightsMade;
         }
 
-        // Close modal on outside click
         window.onclick = (event) => {
             const modal = document.getElementById('actionModal');
             if (event.target === modal) {
