@@ -60,7 +60,7 @@ A minimal room/worker chat UI is available in [`worker-chat/`](worker-chat/).
 
 Run it locally:
 
-1. `cd /home/runner/work/claude-ai-factory/claude-ai-factory/worker-chat`
+1. `cd worker-chat`
 2. `npm install`
 3. `npm run dev`
 4. `npm run test`

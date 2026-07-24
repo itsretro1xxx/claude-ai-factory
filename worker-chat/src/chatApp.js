@@ -362,7 +362,8 @@ function renderApp(root, state, storage) {
   root.querySelector('[data-action="send-manager"]').addEventListener('submit', (event) => {
     event.preventDefault()
     const form = event.currentTarget
-    const message = form.message.value.trim()
+    const messageField = form.elements.namedItem('message')
+    const message = messageField.value.trim()
     if (!message) return
 
     addMessage(state, state.activeRoomId, state.activeWorkerId, 'manager', message)
@@ -374,7 +375,9 @@ function renderApp(root, state, storage) {
   root.querySelector('[data-action="send-worker"]').addEventListener('submit', (event) => {
     event.preventDefault()
     const form = event.currentTarget
-    const message = form.message.value.trim()
+    const messageField = form.elements.namedItem('message')
+    const needsResponseField = form.elements.namedItem('needsResponse')
+    const message = messageField.value.trim()
     if (!message) return
 
     addMessage(
@@ -383,11 +386,11 @@ function renderApp(root, state, storage) {
       state.activeWorkerId,
       'worker',
       message,
-      form.needsResponse.checked
+      needsResponseField.checked
     )
 
     form.reset()
-    form.needsResponse.checked = true
+    needsResponseField.checked = true
     persistState(storage, state)
     renderApp(root, state, storage)
   })
