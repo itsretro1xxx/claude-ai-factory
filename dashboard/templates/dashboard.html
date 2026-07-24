@@ -313,53 +313,48 @@
         .sprite {
             position: absolute;
             user-select: none;
-            font-family: 'Courier New', monospace;
+            font-family: 'Press Start 2P', cursive;
             line-height: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            z-index: 10;
         }
 
         .sprite-image {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
+            margin-bottom: 3px;
+            background-color: rgba(0, 0, 0, 0.35);
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center bottom;
             image-rendering: pixelated;
-            margin-bottom: 2px;
+            border: 2px solid #FFD700;
         }
 
         .sprite-name {
-            font-size: 0.5em;
+            font-size: 0.45em;
             font-family: 'Press Start 2P', cursive;
-            color: #FFD700;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 2px 4px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2px 6px;
             border: 1px solid #FFD700;
-            white-space: nowrap;
-        }
-
-        .sprite.player .sprite-name {
             color: #FFD700;
-            border-color: #FFD700;
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
-        }
-
-        .sprite-activity {
-            font-size: 0.38em;
-            font-family: 'Press Start 2P', cursive;
-            color: #b8dba0;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 2px 4px;
-            margin-top: 2px;
             white-space: nowrap;
+            margin-top: 2px;
         }
 
         .sprite.player .sprite-image {
-            width: 52px;
-            height: 52px;
+            border-color: #FFD700;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+            width: 56px;
+            height: 56px;
+        }
+
+        .sprite.player .sprite-name {
+            border-color: #FFD700;
+            color: #FFD700;
         }
 
         .sprite.npc:hover {
@@ -367,13 +362,82 @@
             transform: scale(1.1);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
+        /* WORKER SPECIFIC COLORS */
+        .worker-alex .sprite-image {
+            border-color: #FF6B6B;
         }
 
-        .sprite.npc {
-            animation: float 3s ease-in-out infinite;
+        .worker-alex .sprite-name {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+        }
+
+        .worker-maria .sprite-image {
+            border-color: #4ECDC4;
+        }
+
+        .worker-maria .sprite-name {
+            border-color: #4ECDC4;
+            color: #4ECDC4;
+        }
+
+        .worker-sam .sprite-image {
+            border-color: #95E1D3;
+        }
+
+        .worker-sam .sprite-name {
+            border-color: #95E1D3;
+            color: #95E1D3;
+        }
+
+        /* ACTIVITY ANIMATIONS */
+        .working-animation {
+            animation: working 0.6s infinite;
+        }
+
+        @keyframes working {
+            0%, 100% { transform: translateY(0px) scaleY(1); }
+            50% { transform: translateY(-4px) scaleY(0.95); }
+        }
+
+        .typing-animation {
+            animation: typing 0.8s infinite;
+        }
+
+        @keyframes typing {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .painting-animation {
+            animation: painting 1s infinite;
+        }
+
+        @keyframes painting {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        /* WORK STATION ITEMS */
+        .workstation {
+            position: absolute;
+            font-size: 1.5em;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .workstation.design {
+            color: #4ECDC4;
+        }
+
+        .workstation.research {
+            color: #95E1D3;
+        }
+
+        .workstation.video {
+            color: #FF6B6B;
         }
 
         /* ROOM BACKGROUND */
@@ -527,17 +591,19 @@
             50% { opacity: 0.3; }
         }
 
-        /* ROOM DECORATIONS */
-        .room-item {
+        /* WORK ACTIVITY INDICATOR */
+        .activity-indicator {
             position: absolute;
-            font-size: 3em;
-            opacity: 0.15;
-            pointer-events: none;
+            font-size: 0.8em;
+            color: #00ff00;
+            opacity: 0.7;
+            animation: bounce 0.5s infinite alternate;
+            margin-top: -25px;
         }
 
-        /* TEXT STYLING */
-        .text-pixel {
-            font-family: 'Press Start 2P', cursive;
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
         }
     </style>
 </head>
@@ -558,7 +624,7 @@
 
             <!-- GAME CANVAS -->
             <div class="game-canvas" id="gameCanvas">
-                <div class="room-bg" id="roomBg">WORK</div>
+                <div class="room-bg" id="roomBg"></div>
             </div>
         </div>
 
@@ -644,7 +710,7 @@
     </div>
 
     <script>
-        // Character portrait images, uploaded earlier and cropped from the reference cast art
+        // Character portrait images, cropped from the reference cast art
         const CHARACTER_IMAGES = {
             Alex: '/static/characters/alex.png',
             Maria: '/static/characters/maria.png',
@@ -659,13 +725,6 @@
             '/static/rooms/research.jpg'
         ];
 
-        // What each worker is currently up to, indexed by room
-        const activities = {
-            0: ["browsing", "reading", "planning"],      // Alex
-            1: ["painting", "creating", "drawing"],      // Maria
-            2: ["typing", "analyzing", "researching"]    // Sam
-        };
-
         // GAME STATE
         const gameState = {
             playerX: 400,
@@ -674,21 +733,35 @@
             rooms: [
                 {
                     name: "GUEST LOBBY & PARLOR",
-                    worker: { name: "Alex", role: "DESIGNER" },
+                    worker: { name: "Alex", role: "DESIGNER", color: "#FF6B6B", activity: "browsing" },
                     action: "generate-design",
-                    actionName: "GENERATE DESIGN"
+                    actionName: "GENERATE DESIGN",
+                    workstations: [
+                        { x: 200, y: 150, item: "📋" },
+                        { x: 800, y: 200, item: "🖼️" }
+                    ]
                 },
                 {
                     name: "DESIGN LIVE",
-                    worker: { name: "Maria", role: "DIRECTOR" },
+                    worker: { name: "Maria", role: "DIRECTOR", color: "#4ECDC4", activity: "painting" },
                     action: "generate-short",
-                    actionName: "GENERATE SHORT"
+                    actionName: "GENERATE SHORT",
+                    workstations: [
+                        { x: 150, y: 180, item: "🎨" },
+                        { x: 850, y: 220, item: "🖌️" },
+                        { x: 500, y: 350, item: "🎭" }
+                    ]
                 },
                 {
                     name: "RESEARCH LOG ANALYZE",
-                    worker: { name: "Sam", role: "ANALYST" },
+                    worker: { name: "Sam", role: "ANALYST", color: "#95E1D3", activity: "typing" },
                     action: "analyze",
-                    actionName: "ANALYZE TRENDS"
+                    actionName: "ANALYZE TRENDS",
+                    workstations: [
+                        { x: 200, y: 200, item: "📊" },
+                        { x: 800, y: 180, item: "🔬" },
+                        { x: 500, y: 300, item: "📈" }
+                    ]
                 }
             ],
             stats: {
@@ -698,33 +771,56 @@
                 insightsMade: 0
             },
             workers: [
-                { name: "Alex", room: 0, x: 300, y: 300, role: "DESIGNER", activity: activities[0][0] },
-                { name: "Maria", room: 1, x: 300, y: 300, role: "DIRECTOR", activity: activities[1][0] },
-                { name: "Sam", room: 2, x: 300, y: 300, role: "ANALYST", activity: activities[2][0] }
+                {
+                    name: "Alex",
+                    room: 0,
+                    x: 350,
+                    y: 300,
+                    vx: 0,
+                    vy: 0,
+                    role: "DESIGNER",
+                    color: "#FF6B6B",
+                    activity: "browsing",
+                    activityTimer: 0,
+                    moveTimer: 0
+                },
+                {
+                    name: "Maria",
+                    room: 1,
+                    x: 400,
+                    y: 280,
+                    vx: 0,
+                    vy: 0,
+                    role: "DIRECTOR",
+                    color: "#4ECDC4",
+                    activity: "painting",
+                    activityTimer: 0,
+                    moveTimer: 0
+                },
+                {
+                    name: "Sam",
+                    room: 2,
+                    x: 380,
+                    y: 320,
+                    vx: 0,
+                    vy: 0,
+                    role: "ANALYST",
+                    color: "#95E1D3",
+                    activity: "typing",
+                    activityTimer: 0,
+                    moveTimer: 0
+                }
             ],
             keys: {}
         };
-
-        // Pick a new random activity per worker, and refresh the sidebar labels to match
-        function updateActivities() {
-            gameState.workers.forEach((worker) => {
-                const options = activities[worker.room];
-                worker.activity = options[Math.floor(Math.random() * options.length)];
-            });
-            document.querySelectorAll('.room-worker').forEach((el, i) => {
-                const worker = gameState.workers[i];
-                el.textContent = `${worker.name} - ${worker.activity}`;
-            });
-        }
 
         // INITIALIZATION
         window.addEventListener('load', () => {
             initGame();
             updateUI();
-            updateActivities();
+            gameState.workers.forEach(syncSidebarLabel);
             setInterval(updateFactoryStatus, 5000);
-            setInterval(animateWorkers, 100);
-            setInterval(updateActivities, 4000);
+            setInterval(updateWorkerActivity, 100);
             render();
         });
 
@@ -738,6 +834,7 @@
 
             setInterval(() => {
                 updatePlayerPosition();
+                updateWorkerPosition();
                 render();
             }, 30);
         }
@@ -758,18 +855,65 @@
                 `${Math.round(gameState.playerX)},${Math.round(gameState.playerY)}`;
         }
 
-        // WORKER ANIMATION
-        function animateWorkers() {
+        // WORKER MOVEMENT WITH PATHFINDING
+        function updateWorkerPosition() {
+            const canvas = document.getElementById('gameCanvas');
+            const canvasRect = canvas.getBoundingClientRect();
+            const width = canvasRect.width;
+            const height = canvasRect.height;
+
             gameState.workers.forEach((worker) => {
                 if (worker.room === gameState.currentRoom) {
-                    worker.x += (Math.random() - 0.5) * 2;
-                    worker.y += (Math.random() - 0.5) * 2;
+                    worker.moveTimer++;
 
-                    const canvas = document.getElementById('gameCanvas');
-                    worker.x = Math.max(50, Math.min(canvas.clientWidth - 50, worker.x));
-                    worker.y = Math.max(50, Math.min(canvas.clientHeight - 50, worker.y));
+                    // Every 60-120 frames, pick new random destination
+                    if (worker.moveTimer > 60 + Math.random() * 60) {
+                        worker.vx = (Math.random() - 0.5) * 4;
+                        worker.vy = (Math.random() - 0.5) * 4;
+                        worker.moveTimer = 0;
+                    }
+
+                    // Move worker
+                    worker.x += worker.vx;
+                    worker.y += worker.vy;
+
+                    // Bounce off walls
+                    if (worker.x < 50 || worker.x > width - 50) worker.vx *= -1;
+                    if (worker.y < 50 || worker.y > height - 50) worker.vy *= -1;
+
+                    // Keep in bounds
+                    worker.x = Math.max(50, Math.min(width - 50, worker.x));
+                    worker.y = Math.max(50, Math.min(height - 50, worker.y));
                 }
             });
+        }
+
+        // WORKER ACTIVITY ANIMATION
+        function updateWorkerActivity() {
+            gameState.workers.forEach((worker) => {
+                worker.activityTimer++;
+
+                // Switch activities every 3-5 seconds
+                if (worker.activityTimer > 180 + Math.random() * 120) {
+                    const activities = {
+                        0: ["browsing", "reading", "planning"],
+                        1: ["painting", "creating", "drawing"],
+                        2: ["typing", "analyzing", "researching"]
+                    };
+
+                    const possibleActivities = activities[worker.room] || ["working"];
+                    worker.activity = possibleActivities[Math.floor(Math.random() * possibleActivities.length)];
+                    worker.activityTimer = 0;
+                    syncSidebarLabel(worker);
+                }
+            });
+        }
+
+        // Keep the sidebar room card's "Name - activity" label in sync with a worker's state
+        function syncSidebarLabel(worker) {
+            const idx = gameState.workers.indexOf(worker);
+            const el = document.querySelectorAll('.room-worker')[idx];
+            if (el) el.textContent = `${worker.name} - ${worker.activity}`;
         }
 
         // RENDERING
@@ -777,17 +921,44 @@
             const canvas = document.getElementById('gameCanvas');
             canvas.innerHTML = '';
 
-            // Background
+            // Background - real room art
             const bgDiv = document.createElement('div');
             bgDiv.className = 'room-bg';
             bgDiv.style.backgroundImage = `url(${ROOM_IMAGES[gameState.currentRoom]})`;
             canvas.appendChild(bgDiv);
 
+            // Draw workstations
+            const room = gameState.rooms[gameState.currentRoom];
+            if (room.workstations) {
+                room.workstations.forEach((station) => {
+                    const stationDiv = document.createElement('div');
+                    stationDiv.className = 'workstation';
+                    stationDiv.style.left = station.x + 'px';
+                    stationDiv.style.top = station.y + 'px';
+                    stationDiv.textContent = station.item;
+                    stationDiv.style.fontSize = '2.5em';
+                    canvas.appendChild(stationDiv);
+                });
+            }
+
             // Draw workers
             gameState.workers.forEach((worker) => {
                 if (worker.room === gameState.currentRoom) {
                     const spriteDiv = document.createElement('div');
-                    spriteDiv.className = 'sprite npc';
+
+                    // Add class for worker color
+                    const workerClass = worker.name.toLowerCase();
+                    spriteDiv.className = `sprite npc worker-${workerClass}`;
+
+                    // Add activity animation
+                    if (worker.activity === "typing") {
+                        spriteDiv.classList.add('typing-animation');
+                    } else if (worker.activity === "painting" || worker.activity === "creating" || worker.activity === "drawing") {
+                        spriteDiv.classList.add('painting-animation');
+                    } else {
+                        spriteDiv.classList.add('working-animation');
+                    }
+
                     spriteDiv.style.left = worker.x + 'px';
                     spriteDiv.style.top = worker.y + 'px';
                     spriteDiv.onclick = (e) => {
@@ -795,20 +966,32 @@
                         showWorkerDialog(worker);
                     };
 
-                    const nameDiv = document.createElement('div');
-                    nameDiv.className = 'sprite-name';
-                    nameDiv.textContent = worker.name.toUpperCase();
-
                     const imageDiv = document.createElement('div');
                     imageDiv.className = 'sprite-image';
                     imageDiv.style.backgroundImage = `url(${CHARACTER_IMAGES[worker.name]})`;
 
-                    const activityDiv = document.createElement('div');
-                    activityDiv.className = 'sprite-activity';
-                    activityDiv.textContent = worker.activity + '...';
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'sprite-name';
+                    nameDiv.textContent = worker.name.toUpperCase();
 
-                    spriteDiv.appendChild(nameDiv);
+                    // Activity indicator
+                    const activityDiv = document.createElement('div');
+                    activityDiv.className = 'activity-indicator';
+                    const activityEmojis = {
+                        "typing": "⌨️",
+                        "painting": "🎨",
+                        "creating": "🖌️",
+                        "drawing": "✏️",
+                        "browsing": "👀",
+                        "reading": "📖",
+                        "planning": "📋",
+                        "analyzing": "🔍",
+                        "researching": "🔬"
+                    };
+                    activityDiv.textContent = activityEmojis[worker.activity] || "⚙️";
+
                     spriteDiv.appendChild(imageDiv);
+                    spriteDiv.appendChild(nameDiv);
                     spriteDiv.appendChild(activityDiv);
                     canvas.appendChild(spriteDiv);
                 }
@@ -820,16 +1003,16 @@
             playerDiv.style.left = gameState.playerX + 'px';
             playerDiv.style.top = gameState.playerY + 'px';
 
-            const kingNameDiv = document.createElement('div');
-            kingNameDiv.className = 'sprite-name';
-            kingNameDiv.textContent = 'NATHAN BOSS';
-
             const kingImageDiv = document.createElement('div');
             kingImageDiv.className = 'sprite-image';
             kingImageDiv.style.backgroundImage = `url(${CHARACTER_IMAGES.King})`;
 
-            playerDiv.appendChild(kingNameDiv);
+            const kingNameDiv = document.createElement('div');
+            kingNameDiv.className = 'sprite-name';
+            kingNameDiv.textContent = 'NATHAN BOSS';
+
             playerDiv.appendChild(kingImageDiv);
+            playerDiv.appendChild(kingNameDiv);
             canvas.appendChild(playerDiv);
 
             document.getElementById('playerRoom').textContent = gameState.rooms[gameState.currentRoom].name;
@@ -911,15 +1094,29 @@ ${JSON.stringify(info, null, 2).substring(0, 800)}...</pre>`;
         }
 
         function showWorkerDialog(worker) {
+            const activityDescriptions = {
+                "typing": "TYPING AWAY AT THE KEYBOARD!",
+                "painting": "CREATING A MASTERPIECE!",
+                "creating": "BRINGING IDEAS TO LIFE!",
+                "drawing": "SKETCHING NEW DESIGNS!",
+                "browsing": "RESEARCHING TRENDS!",
+                "reading": "STUDYING THE DATA!",
+                "planning": "STRATEGIZING NEXT MOVES!",
+                "analyzing": "ANALYZING PATTERNS!",
+                "researching": "INVESTIGATING FINDINGS!"
+            };
+
             document.getElementById('actionModal').classList.add('active');
             document.getElementById('modalTitle').textContent = `COMM - ${worker.name.toUpperCase()}`;
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
                     <div class="modal-portrait" style="background-image: url(${CHARACTER_IMAGES[worker.name]});"></div>
                     <p style="color: #00d4ff; margin-bottom: 15px; font-size: 0.4em;"><strong>${worker.name.toUpperCase()}</strong></p>
-                    <p style="margin-bottom: 10px; font-size: 0.4em;">BOSS, I'M WORKING ON THE ${gameState.rooms[worker.room].name} TASKS!</p>
+                    <p style="margin-bottom: 10px; font-size: 0.4em;">BOSS, I'M ${activityDescriptions[worker.activity]}</p>
                     <p style="color: #00ff00; margin-top: 15px; font-size: 0.4em;">TASKS DONE: ${Math.floor(Math.random() * 50) + 10}</p>
                     <p style="color: #ff00ff; margin-top: 10px; font-size: 0.4em;">EFFICIENCY: ${Math.floor(Math.random() * 100) + 50}%</p>
+                    <p style="color: ${worker.color}; margin-top: 15px; font-size: 0.35em; border-top: 1px solid ${worker.color}; padding-top: 10px;">
+                    CURRENT ACTIVITY: ${worker.activity.toUpperCase()}</p>
                 </div>
             `;
         }
