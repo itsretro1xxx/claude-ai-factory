@@ -811,7 +811,9 @@
                     moveTimer: 0
                 }
             ],
-            keys: {}
+            keys: {},
+            deltaTime: 0,
+            lastTime: Date.now()
         };
 
         // INITIALIZATION
@@ -820,8 +822,8 @@
             updateUI();
             gameState.workers.forEach(syncSidebarLabel);
             setInterval(updateFactoryStatus, 5000);
-            setInterval(updateWorkerActivity, 100);
-            render();
+            gameState.lastTime = Date.now();
+            requestAnimationFrame(gameLoop);
         });
 
         function initGame() {
@@ -831,21 +833,31 @@
             document.addEventListener('keyup', (e) => {
                 gameState.keys[e.key.toLowerCase()] = false;
             });
+        }
 
-            setInterval(() => {
-                updatePlayerPosition();
-                updateWorkerPosition();
-                render();
-            }, 30);
+        // MAIN LOOP - runs on requestAnimationFrame, paced by real elapsed time
+        // (deltaTime) rather than a fixed-interval frame count, so movement and
+        // activity timing stay consistent regardless of display refresh rate.
+        function gameLoop() {
+            const currentTime = Date.now();
+            gameState.deltaTime = (currentTime - gameState.lastTime) / 1000;
+            gameState.lastTime = currentTime;
+
+            updatePlayerPosition();
+            updateWorkerPosition();
+            updateWorkerActivity();
+            render();
+
+            requestAnimationFrame(gameLoop);
         }
 
         // PLAYER MOVEMENT
         function updatePlayerPosition() {
-            const speed = 5;
-            if (gameState.keys['w'] || gameState.keys['arrowup']) gameState.playerY -= speed;
-            if (gameState.keys['s'] || gameState.keys['arrowdown']) gameState.playerY += speed;
-            if (gameState.keys['a'] || gameState.keys['arrowleft']) gameState.playerX -= speed;
-            if (gameState.keys['d'] || gameState.keys['arrowright']) gameState.playerX += speed;
+            const speed = 167; // px/sec - matches the old 5px-per-30ms-tick pace
+            if (gameState.keys['w'] || gameState.keys['arrowup']) gameState.playerY -= speed * gameState.deltaTime;
+            if (gameState.keys['s'] || gameState.keys['arrowdown']) gameState.playerY += speed * gameState.deltaTime;
+            if (gameState.keys['a'] || gameState.keys['arrowleft']) gameState.playerX -= speed * gameState.deltaTime;
+            if (gameState.keys['d'] || gameState.keys['arrowright']) gameState.playerX += speed * gameState.deltaTime;
 
             const canvas = document.getElementById('gameCanvas');
             gameState.playerX = Math.max(30, Math.min(canvas.clientWidth - 30, gameState.playerX));
@@ -864,18 +876,18 @@
 
             gameState.workers.forEach((worker) => {
                 if (worker.room === gameState.currentRoom) {
-                    worker.moveTimer++;
+                    worker.moveTimer += gameState.deltaTime;
 
-                    // Every 60-120 frames, pick new random destination
-                    if (worker.moveTimer > 60 + Math.random() * 60) {
-                        worker.vx = (Math.random() - 0.5) * 4;
-                        worker.vy = (Math.random() - 0.5) * 4;
+                    // Every 1.8-3.6s, pick a new random destination
+                    if (worker.moveTimer > 1.8 + Math.random() * 1.8) {
+                        worker.vx = (Math.random() - 0.5) * 133; // px/sec
+                        worker.vy = (Math.random() - 0.5) * 133;
                         worker.moveTimer = 0;
                     }
 
                     // Move worker
-                    worker.x += worker.vx;
-                    worker.y += worker.vy;
+                    worker.x += worker.vx * gameState.deltaTime;
+                    worker.y += worker.vy * gameState.deltaTime;
 
                     // Bounce off walls
                     if (worker.x < 50 || worker.x > width - 50) worker.vx *= -1;
@@ -891,10 +903,10 @@
         // WORKER ACTIVITY ANIMATION
         function updateWorkerActivity() {
             gameState.workers.forEach((worker) => {
-                worker.activityTimer++;
+                worker.activityTimer += gameState.deltaTime;
 
                 // Switch activities every 3-5 seconds
-                if (worker.activityTimer > 180 + Math.random() * 120) {
+                if (worker.activityTimer > 3 + Math.random() * 2) {
                     const activities = {
                         0: ["browsing", "reading", "planning"],
                         1: ["painting", "creating", "drawing"],
