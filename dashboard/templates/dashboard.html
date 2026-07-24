@@ -224,15 +224,40 @@
             line-height: 1;
         }
 
+        .sprite img {
+            display: block;
+            height: 64px;
+            width: auto;
+            image-rendering: pixelated;
+            user-select: none;
+            pointer-events: none;
+        }
+
         .sprite.player {
             font-size: 2.5em;
             z-index: 100;
             filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8));
         }
 
+        .sprite.player img {
+            height: 80px;
+        }
+
         .sprite.npc {
             animation: float 3s ease-in-out infinite;
             cursor: pointer;
+        }
+
+        .portrait-img {
+            height: 140px;
+            width: auto;
+            image-rendering: pixelated;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .portrait-img.small {
+            height: 64px;
         }
 
         .sprite.npc:hover {
@@ -555,6 +580,7 @@
             // Alex - Green shirt, dark hair
             alex: {
                 emoji: "🧑‍💻",
+                img: "/static/characters/alex.png",
                 name: "Alex",
                 color: "#FF6B6B",
                 char: "A"
@@ -562,6 +588,7 @@
             // Maria - Red shirt, black hair
             maria: {
                 emoji: "👩‍💼",
+                img: "/static/characters/maria.png",
                 name: "Maria",
                 color: "#4ECDC4",
                 char: "M"
@@ -569,6 +596,7 @@
             // Sam - Blue shirt, blonde hair
             sam: {
                 emoji: "👨‍🔧",
+                img: "/static/characters/sam.png",
                 name: "Sam",
                 color: "#95E1D3",
                 char: "S"
@@ -576,6 +604,7 @@
             // Nathan King - With crown
             king: {
                 emoji: "👑",
+                img: "/static/characters/nathan.png",
                 name: "Nathan King",
                 color: "#FFD700",
                 char: "K"
@@ -623,6 +652,7 @@
                 {
                     name: "Alex",
                     emoji: "🧑‍💻",
+                    img: "/static/characters/alex.png",
                     room: 0,
                     x: 300,
                     y: 300,
@@ -632,6 +662,7 @@
                 {
                     name: "Maria",
                     emoji: "👩‍💼",
+                    img: "/static/characters/maria.png",
                     room: 1,
                     x: 300,
                     y: 300,
@@ -641,6 +672,7 @@
                 {
                     name: "Sam",
                     emoji: "👨‍🔧",
+                    img: "/static/characters/sam.png",
                     room: 2,
                     x: 300,
                     y: 300,
@@ -758,7 +790,14 @@
                     // Sprite
                     const sprite = document.createElement('div');
                     sprite.className = 'sprite npc';
-                    sprite.textContent = worker.emoji;
+                    if (worker.img) {
+                        const img = document.createElement('img');
+                        img.src = worker.img;
+                        img.alt = worker.name;
+                        sprite.appendChild(img);
+                    } else {
+                        sprite.textContent = worker.emoji;
+                    }
                     sprite.style.color = worker.color;
                     sprite.title = `${worker.name} - ${worker.description}`;
                     sprite.onclick = (e) => {
@@ -791,7 +830,10 @@
             // Player sprite
             const player = document.createElement('div');
             player.className = 'sprite player';
-            player.textContent = '👑';
+            const kingImg = document.createElement('img');
+            kingImg.src = PIXEL_SPRITES.king.img;
+            kingImg.alt = 'Nathan King';
+            player.appendChild(kingImg);
             player.style.color = '#FFD700';
             playerContainer.appendChild(player);
 
@@ -849,7 +891,7 @@
             document.getElementById('modalTitle').textContent = `⚡ ${room.actionName} - ${room.worker.name}`;
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
-                    <div style="font-size: 2em; margin-bottom: 10px;">${room.worker.emoji}</div>
+                    <img class="portrait-img small" src="${room.worker.img}" alt="${room.worker.name}" style="margin-bottom: 10px;">
                     <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
                     <p>Generating ${room.actionName.toLowerCase()}...</p>
                 </div>
@@ -878,7 +920,7 @@
 
         function showSuccessModal(room, data) {
             let content = `<div style="text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 2em; margin-bottom: 10px;">${room.worker.emoji}</div>
+                <img class="portrait-img small" src="${room.worker.img}" alt="${room.worker.name}" style="margin-bottom: 10px;">
                 <h3 style="color: #00ff00; margin-bottom: 10px;">✅ ${room.actionName} Complete!</h3>
                 <p style="color: ${room.worker.color}; font-weight: bold;">${room.worker.name} just finished!</p>
             </div>`;
@@ -900,7 +942,7 @@ Keep it up ${room.worker.name}! 💪</p>`;
             document.getElementById('modalTitle').textContent = `💬 ${worker.name}`;
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
-                    <div style="font-size: 3em; margin-bottom: 10px;">${worker.emoji}</div>
+                    <img class="portrait-img" src="${worker.img}" alt="${worker.name}" style="margin-bottom: 10px;">
                     <p style="color: ${worker.color}; margin-bottom: 15px;"><strong>${worker.name}</strong></p>
                     <p style="margin-bottom: 10px;">🗣️ "Hey boss! I'm working hard on the ${gameState.rooms[worker.room].name} tasks!"</p>
                     <p style="color: #00ff00; margin-top: 15px;">📊 Tasks completed: ${Math.floor(Math.random() * 50) + 10}</p>
