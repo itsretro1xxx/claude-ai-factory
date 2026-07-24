@@ -220,6 +220,8 @@
             position: absolute;
             font-size: 2em;
             user-select: none;
+            font-family: 'Courier New', monospace;
+            line-height: 1;
         }
 
         .sprite.player {
@@ -230,11 +232,17 @@
 
         .sprite.npc {
             animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+        }
+
+        .sprite.npc:hover {
+            filter: drop-shadow(0 0 8px rgba(255, 255, 0, 0.8));
+            transform: scale(1.1);
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-10px); }
         }
 
         /* ROOM DECORATION */
@@ -252,6 +260,7 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
 
         /* MODAL FOR ACTIONS */
@@ -338,9 +347,10 @@
         }
 
         .hud-title {
-            color: #00ff00;
+            color: #FFD700;
             font-weight: bold;
             margin-bottom: 5px;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
         }
 
         .hud-stat {
@@ -351,6 +361,22 @@
         .hud-stat-value {
             color: #ff00ff;
             font-weight: bold;
+        }
+
+        /* WORKER NAME LABEL */
+        .worker-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #FFD700;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            font-weight: bold;
+            white-space: nowrap;
+            border: 1px solid #FFD700;
         }
 
         /* SCROLLBAR */
@@ -524,6 +550,38 @@
     </div>
 
     <script>
+        // ============ PIXEL ART WORKER SPRITES ============
+        const PIXEL_SPRITES = {
+            // Alex - Green shirt, dark hair
+            alex: {
+                emoji: "🧑‍💻",
+                name: "Alex",
+                color: "#FF6B6B",
+                char: "A"
+            },
+            // Maria - Red shirt, black hair
+            maria: {
+                emoji: "👩‍💼",
+                name: "Maria",
+                color: "#4ECDC4",
+                char: "M"
+            },
+            // Sam - Blue shirt, blonde hair
+            sam: {
+                emoji: "👨‍🔧",
+                name: "Sam",
+                color: "#95E1D3",
+                char: "S"
+            },
+            // Nathan King - With crown
+            king: {
+                emoji: "👑",
+                name: "Nathan King",
+                color: "#FFD700",
+                char: "K"
+            }
+        };
+
         // ============ GAME STATE ============
         const gameState = {
             playerX: 400,
@@ -534,7 +592,7 @@
                     name: "🛍️ Etsy POD Mine",
                     icon: "🛍️",
                     decoration: "👕👔👗",
-                    worker: { name: "Grimspark", emoji: "👷", color: "#FF6B6B" },
+                    worker: PIXEL_SPRITES.alex,
                     action: "generate-design",
                     actionName: "Generate Design"
                 },
@@ -542,7 +600,7 @@
                     name: "🎬 YouTube Shorts Studio",
                     icon: "🎬",
                     decoration: "🎥📹🎞️",
-                    worker: { name: "Fluxwave", emoji: "🎬", color: "#4ECDC4" },
+                    worker: PIXEL_SPRITES.maria,
                     action: "generate-short",
                     actionName: "Generate Short"
                 },
@@ -550,7 +608,7 @@
                     name: "🔬 Research Lab",
                     icon: "🔬",
                     decoration: "🧪🧬⚗️",
-                    worker: { name: "Synthora", emoji: "🧪", color: "#95E1D3" },
+                    worker: PIXEL_SPRITES.sam,
                     action: "analyze",
                     actionName: "Analyze Trends"
                 }
@@ -562,9 +620,33 @@
                 insightsMade: 0
             },
             workers: [
-                { name: "Grimspark", emoji: "👷", room: 0, x: 300, y: 300, color: "#FF6B6B" },
-                { name: "Fluxwave", emoji: "🎬", room: 1, x: 300, y: 300, color: "#4ECDC4" },
-                { name: "Synthora", emoji: "🧪", room: 2, x: 300, y: 300, color: "#95E1D3" }
+                {
+                    name: "Alex",
+                    emoji: "🧑‍💻",
+                    room: 0,
+                    x: 300,
+                    y: 300,
+                    color: "#FF6B6B",
+                    description: "Design Expert"
+                },
+                {
+                    name: "Maria",
+                    emoji: "👩‍💼",
+                    room: 1,
+                    x: 300,
+                    y: 300,
+                    color: "#4ECDC4",
+                    description: "Video Director"
+                },
+                {
+                    name: "Sam",
+                    emoji: "👨‍🔧",
+                    room: 2,
+                    x: 300,
+                    y: 300,
+                    color: "#95E1D3",
+                    description: "Research Analyst"
+                }
             ],
             keys: {},
             lastInteraction: { worker: -1, time: 0 },
@@ -656,32 +738,64 @@
             // Draw workers in current room
             gameState.workers.forEach((worker, i) => {
                 if (worker.room === gameState.currentRoom) {
+                    const spriteContainer = document.createElement('div');
+                    spriteContainer.style.position = 'absolute';
+                    spriteContainer.style.left = worker.x + 'px';
+                    spriteContainer.style.top = worker.y + 'px';
+                    spriteContainer.style.display = 'flex';
+                    spriteContainer.style.flexDirection = 'column';
+                    spriteContainer.style.alignItems = 'center';
+                    spriteContainer.style.cursor = 'pointer';
+
+                    // Label
+                    const label = document.createElement('div');
+                    label.className = 'worker-label';
+                    label.textContent = worker.name;
+                    label.style.color = worker.color;
+                    label.style.borderColor = worker.color;
+                    spriteContainer.appendChild(label);
+
+                    // Sprite
                     const sprite = document.createElement('div');
                     sprite.className = 'sprite npc';
                     sprite.textContent = worker.emoji;
-                    sprite.style.left = worker.x + 'px';
-                    sprite.style.top = worker.y + 'px';
                     sprite.style.color = worker.color;
-                    sprite.title = `${worker.name}`;
+                    sprite.title = `${worker.name} - ${worker.description}`;
+                    sprite.onclick = (e) => {
+                        e.stopPropagation();
+                        showWorkerDialog(worker);
+                    };
 
-                    // Interaction hint
-                    const hint = document.createElement('div');
-                    hint.className = 'press-e';
-                    hint.textContent = `${worker.name}`;
-                    hint.style.color = worker.color;
-                    sprite.appendChild(hint);
-
-                    canvas.appendChild(sprite);
+                    spriteContainer.appendChild(sprite);
+                    canvas.appendChild(spriteContainer);
                 }
             });
 
-            // Draw player (Boss)
+            // Draw player (Boss with crown)
+            const playerContainer = document.createElement('div');
+            playerContainer.style.position = 'absolute';
+            playerContainer.style.left = gameState.playerX + 'px';
+            playerContainer.style.top = gameState.playerY + 'px';
+            playerContainer.style.display = 'flex';
+            playerContainer.style.flexDirection = 'column';
+            playerContainer.style.alignItems = 'center';
+
+            // Player label
+            const playerLabel = document.createElement('div');
+            playerLabel.className = 'worker-label';
+            playerLabel.textContent = '👑 King';
+            playerLabel.style.color = '#FFD700';
+            playerLabel.style.borderColor = '#FFD700';
+            playerContainer.appendChild(playerLabel);
+
+            // Player sprite
             const player = document.createElement('div');
             player.className = 'sprite player';
             player.textContent = '👑';
-            player.style.left = gameState.playerX + 'px';
-            player.style.top = gameState.playerY + 'px';
-            canvas.appendChild(player);
+            player.style.color = '#FFD700';
+            playerContainer.appendChild(player);
+
+            canvas.appendChild(playerContainer);
 
             // Update HUD
             document.getElementById('playerRoom').textContent = gameState.rooms[gameState.currentRoom].name;
@@ -732,9 +846,10 @@
 
         async function showActionModal(room) {
             document.getElementById('actionModal').classList.add('active');
-            document.getElementById('modalTitle').textContent = `⚡ ${room.actionName}`;
+            document.getElementById('modalTitle').textContent = `⚡ ${room.actionName} - ${room.worker.name}`;
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">${room.worker.emoji}</div>
                     <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
                     <p>Generating ${room.actionName.toLowerCase()}...</p>
                 </div>
@@ -762,7 +877,11 @@
         }
 
         function showSuccessModal(room, data) {
-            let content = `<h3 style="color: #00ff00; margin-bottom: 10px;">✅ ${room.actionName} Complete!</h3>`;
+            let content = `<div style="text-align: center; margin-bottom: 15px;">
+                <div style="font-size: 2em; margin-bottom: 10px;">${room.worker.emoji}</div>
+                <h3 style="color: #00ff00; margin-bottom: 10px;">✅ ${room.actionName} Complete!</h3>
+                <p style="color: ${room.worker.color}; font-weight: bold;">${room.worker.name} just finished!</p>
+            </div>`;
 
             if (data.ideas || data.scripts || data.insights) {
                 const info = data.ideas || data.scripts || data.insights;
@@ -771,7 +890,7 @@ ${JSON.stringify(info, null, 2).substring(0, 1000)}...</pre>`;
             }
 
             content += `<p style="color: #00d4ff; margin-top: 15px; text-align: center;">
-Worker: <strong>${gameState.workers[gameState.currentRoom].name}</strong> completed the task!</p>`;
+Keep it up ${room.worker.name}! 💪</p>`;
 
             document.getElementById('modalBody').innerHTML = content;
         }
@@ -782,10 +901,11 @@ Worker: <strong>${gameState.workers[gameState.currentRoom].name}</strong> comple
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
                     <div style="font-size: 3em; margin-bottom: 10px;">${worker.emoji}</div>
-                    <p style="color: #00d4ff; margin-bottom: 15px;"><strong>${worker.name}</strong></p>
-                    <p style="margin-bottom: 10px;">"Hey boss ${worker.name}! I'm working hard on the ${gameState.rooms[gameState.currentRoom].name} tasks!"</p>
-                    <p style="color: #00ff00;">Tasks completed: ${Math.floor(Math.random() * 50) + 10}</p>
-                    <p style="color: #ff00ff; margin-top: 10px;">Production: ${Math.floor(Math.random() * 100) + 50}%</p>
+                    <p style="color: ${worker.color}; margin-bottom: 15px;"><strong>${worker.name}</strong></p>
+                    <p style="margin-bottom: 10px;">🗣️ "Hey boss! I'm working hard on the ${gameState.rooms[worker.room].name} tasks!"</p>
+                    <p style="color: #00ff00; margin-top: 15px;">📊 Tasks completed: ${Math.floor(Math.random() * 50) + 10}</p>
+                    <p style="color: #ff00ff; margin-top: 10px;">⚡ Production: ${Math.floor(Math.random() * 100) + 50}%</p>
+                    <p style="color: ${worker.color}; margin-top: 15px; font-size: 0.9em;">Role: ${worker.description}</p>
                 </div>
             `;
         }
