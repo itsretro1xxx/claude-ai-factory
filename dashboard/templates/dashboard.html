@@ -1272,7 +1272,7 @@ ${JSON.stringify(info, null, 2).substring(0, 800)}...</pre>`;
                 gameState.stats.daysRunning = data.days_running;
                 data.workers.forEach((worker, index) => {
                     if (worker.metrics) {
-                        if (index === 0) gameState.stats.designsMade = worker.metrics.products_created || 0;
+                        if (index === 0) gameState.stats.designsMade = worker.metrics.designs_created || 0;
                         else if (index === 1) gameState.stats.videosMade = worker.metrics.shorts_created || 0;
                         else if (index === 2) gameState.stats.insightsMade = worker.metrics.insights_generated || 0;
                     }

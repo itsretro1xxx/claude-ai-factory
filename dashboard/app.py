@@ -77,7 +77,7 @@ def dashboard():
     return render_template('dashboard.html')
 
 @app.route('/api/factory-status')
-def get_factory_status():
+async def get_factory_status():
     """Get current factory status"""
     init_factory()
 
@@ -92,7 +92,7 @@ def get_factory_status():
                 "name": worker.name,
                 "status": worker.status,
                 "tasks_completed": len(worker.task_history),
-                "metrics": worker.metrics
+                "metrics": await worker.get_metrics()
             }
             for worker in factory.workers
         ],
