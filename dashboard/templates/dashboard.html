@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claude AI Factory 🏭</title>
+    <title>Claude AI Factory - Game Edition 🏭</title>
     <style>
         * {
             margin: 0;
@@ -12,218 +12,249 @@
         }
 
         body {
-            font-family: 'Arial Black', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Arial', monospace;
+            background: #0a0a0a;
             color: #e0e0e0;
-            min-height: 100vh;
             overflow: hidden;
         }
 
-        .container {
-            width: 100%;
+        .game-container {
+            width: 100vw;
             height: 100vh;
             display: flex;
-            flex-direction: column;
-            padding: 20px;
+            gap: 10px;
+            padding: 10px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
-        /* HEADER */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            background: linear-gradient(90deg, #0f3460 0%, #1a1a2e 100%);
-            padding: 20px;
-            border: 3px solid #00d4ff;
+        /* MAIN GAME WORLD */
+        .game-world {
+            flex: 1;
+            background: linear-gradient(180deg, #0f1419 0%, #1a1f3a 100%);
+            border: 3px solid #00ff00;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
         }
 
-        .title {
-            font-size: 2em;
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* MINI MAP */
+        .mini-map {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .mini-map-title {
             color: #00d4ff;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 2px solid #00d4ff;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        .stats {
-            display: flex;
-            gap: 30px;
-            font-size: 0.9em;
+        .mini-map-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
         }
 
-        .stat-item {
+        .room-indicator {
+            aspect-ratio: 1;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(0, 212, 255, 0.1);
-            padding: 10px 20px;
+            justify-content: center;
+            gap: 5px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(0, 255, 0, 0.05);
+            padding: 5px;
+            text-align: center;
+        }
+
+        .room-indicator:hover {
+            background: rgba(0, 255, 0, 0.15);
+            transform: scale(1.05);
+        }
+
+        .room-indicator.active {
+            border-color: #ff00ff;
+            background: rgba(255, 0, 255, 0.2);
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+
+        .room-icon {
+            font-size: 1.5em;
+        }
+
+        .room-name {
+            color: #00d4ff;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .room-workers {
+            color: #00ff00;
+            font-size: 0.65em;
+        }
+
+        /* STATS PANEL */
+        .stats-panel {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #00ff00;
             border-radius: 5px;
-            border: 1px solid #00d4ff;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+            color: #00d4ff;
         }
 
         .stat-value {
-            font-size: 1.5em;
             color: #00ff00;
             font-weight: bold;
         }
 
-        .stat-label {
-            font-size: 0.8em;
-            color: #00d4ff;
+        /* CONTROLS */
+        .controls-panel {
+            background: rgba(255, 0, 255, 0.05);
+            border: 2px solid #ff00ff;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
         }
 
-        /* MAIN FACTORY GRID */
-        .factory-grid {
+        .control-title {
+            color: #ff00ff;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .movement-keys {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            flex: 1;
-            margin-bottom: 20px;
+            gap: 4px;
+            margin-bottom: 10px;
         }
 
-        /* ROOM CARDS */
-        .room {
-            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
-            border: 3px solid #00ff00;
-            border-radius: 10px;
-            padding: 20px;
+        .key {
+            background: linear-gradient(135deg, #ff00ff 0%, #ff6600 100%);
+            border: 1px solid #ff00ff;
+            border-radius: 3px;
+            padding: 6px;
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .key-spacer {
+            grid-column: 1 / 4;
+        }
+
+        .action-buttons {
             display: flex;
             flex-direction: column;
+            gap: 6px;
+        }
+
+        .action-btn {
+            background: linear-gradient(90deg, #00d4ff 0%, #00ff00 100%);
+            border: 1px solid #00d4ff;
+            border-radius: 3px;
+            padding: 8px;
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #000;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
-            min-height: 300px;
+            transition: all 0.2s;
+            text-transform: uppercase;
         }
 
-        .room:hover {
-            border-color: #00d4ff;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5), inset 0 0 10px rgba(0, 255, 0, 0.2);
-            transform: scale(1.02);
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
-        .room.active {
-            border-color: #ff00ff;
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+        .action-btn:active {
+            transform: scale(0.95);
         }
 
-        /* ROOM HEADER */
-        .room-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #00ff00;
-            padding-bottom: 10px;
+        .action-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .room-title {
-            font-size: 1.3em;
-            color: #00ff00;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.8);
+        /* PIXEL ART SPRITES */
+        .sprite {
+            position: absolute;
+            font-size: 2em;
+            user-select: none;
         }
 
-        .worker-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #00ff00;
-            box-shadow: 0 0 5px #00ff00;
-            animation: blink 1s infinite;
+        .sprite.player {
+            font-size: 2.5em;
+            z-index: 100;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8));
         }
 
-        .worker-status.inactive {
-            background: #ff4444;
-            animation: none;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0.3; }
-        }
-
-        /* PIXEL ART WORKER */
-        .worker-animation {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-            font-size: 4em;
+        .sprite.npc {
             animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
 
-        /* ROOM CONTENT */
-        .room-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
+        /* ROOM DECORATION */
+        .room-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            opacity: 0.3;
         }
 
-        .metric {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9em;
-            background: rgba(0, 255, 0, 0.1);
-            padding: 8px;
-            border-left: 3px solid #00ff00;
-            border-radius: 3px;
+        /* CONNECTION PATHS */
+        svg.paths {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
-        .metric-label {
-            color: #00d4ff;
-        }
-
-        .metric-value {
-            color: #00ff00;
-            font-weight: bold;
-        }
-
-        /* BUTTONS */
-        .btn {
-            background: linear-gradient(90deg, #00ff00 0%, #00d4ff 100%);
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        .btn-primary {
-            background: linear-gradient(90deg, #00d4ff 0%, #ff00ff 100%);
-            color: #fff;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(90deg, #ff00ff 0%, #ff6600 100%);
-            color: #fff;
-        }
-
-        /* MODAL */
+        /* MODAL FOR ACTIONS */
         .modal {
             display: none;
             position: fixed;
@@ -231,7 +262,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -247,7 +278,7 @@
             border: 3px solid #00d4ff;
             border-radius: 10px;
             padding: 30px;
-            max-width: 800px;
+            max-width: 700px;
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
@@ -280,47 +311,68 @@
             transform: scale(1.2);
         }
 
-        /* DESIGN PREVIEW */
-        .design-preview {
-            background: linear-gradient(45deg, #fff 0%, #f0f0f0 100%);
-            border: 2px solid #00d4ff;
-            border-radius: 5px;
-            padding: 20px;
-            margin: 15px 0;
-            min-height: 200px;
+        /* ROOM BACKGROUND */
+        .room-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3em;
-            color: #333;
+            font-size: 8em;
+            opacity: 0.1;
+            z-index: 0;
         }
 
-        /* VIDEO PREVIEW */
-        .video-preview {
-            background: #000;
-            border: 2px solid #ff00ff;
+        /* HUD */
+        .hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
             border-radius: 5px;
-            padding: 20px;
-            margin: 15px 0;
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 10px;
+            font-size: 0.85em;
+            z-index: 50;
+        }
+
+        .hud-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .hud-stat {
+            color: #00d4ff;
+            margin-bottom: 3px;
+        }
+
+        .hud-stat-value {
             color: #ff00ff;
+            font-weight: bold;
         }
 
-        /* BOTTOM BAR */
-        .bottom-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(90deg, #0f3460 0%, #1a1a2e 100%);
-            padding: 15px 20px;
-            border: 2px solid #00d4ff;
+        /* SCROLLBAR */
+        .mini-map::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .mini-map::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.1);
             border-radius: 5px;
-            font-size: 0.8em;
         }
 
+        .mini-map::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 5px;
+        }
+
+        .mini-map::-webkit-scrollbar-thumb:hover {
+            background: #00ff00;
+        }
+
+        /* LOADING ANIMATION */
         .loading {
             display: inline-block;
             width: 8px;
@@ -336,384 +388,455 @@
             50% { opacity: 0.3; }
         }
 
-        /* SCROLLBAR STYLING */
-        .modal-content::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .modal-content::-webkit-scrollbar-track {
-            background: rgba(0, 212, 255, 0.1);
+        /* INTERACTION HINT */
+        .interaction-hint {
+            position: absolute;
+            background: rgba(255, 0, 255, 0.2);
+            border: 1px solid #ff00ff;
             border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.8em;
+            color: #ff00ff;
+            pointer-events: none;
+            animation: pulse-hint 1s infinite;
         }
 
-        .modal-content::-webkit-scrollbar-thumb {
-            background: #00d4ff;
-            border-radius: 5px;
+        @keyframes pulse-hint {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
-        .modal-content::-webkit-scrollbar-thumb:hover {
-            background: #00ff00;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 1200px) {
-            .factory-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .factory-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .stats {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
+        .press-e {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 5px;
+            font-size: 0.75em;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="title">⛏️ CLAUDE AI FACTORY ⛏️</div>
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-label">DAYS RUNNING</div>
-                    <div class="stat-value" id="daysRunning">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">DESIGNS MADE</div>
-                    <div class="stat-value" id="designsMade">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">VIDEOS MADE</div>
-                    <div class="stat-value" id="videosMade">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">INSIGHTS</div>
-                    <div class="stat-value" id="insightsMade">0</div>
-                </div>
+    <div class="game-container">
+        <!-- GAME WORLD -->
+        <div class="game-world">
+            <!-- HUD -->
+            <div class="hud">
+                <div class="hud-title">👑 Nathan King (Boss)</div>
+                <div class="hud-stat">Position: <span class="hud-stat-value" id="playerPos">0, 0</span></div>
+                <div class="hud-stat">Room: <span class="hud-stat-value" id="playerRoom">Factory</span></div>
+                <div class="hud-stat">Workers: <span class="hud-stat-value" id="totalWorkers">3</span></div>
+            </div>
+
+            <!-- SVG FOR PATHS -->
+            <svg class="paths" id="pathsSvg"></svg>
+
+            <!-- GAME CANVAS -->
+            <div class="game-canvas" id="gameCanvas">
+                <div class="room-bg" id="roomBg">🏭</div>
             </div>
         </div>
 
-        <!-- FACTORY GRID -->
-        <div class="factory-grid">
-            <!-- ETSY ROOM -->
-            <div class="room" id="etsyRoom">
-                <div class="room-header">
-                    <div class="room-title">🛍️ ETSY POD MINE</div>
-                    <div class="worker-status" id="etsyStatus"></div>
+        <!-- SIDEBAR -->
+        <div class="mini-map">
+            <div class="mini-map-title">⛏️ Factory Control</div>
+
+            <!-- MINIMAP GRID -->
+            <div class="mini-map-grid">
+                <div class="room-indicator active" onclick="navigateToRoom(0)" data-room="0">
+                    <div class="room-icon">🛍️</div>
+                    <div class="room-name">Etsy Mine</div>
+                    <div class="room-workers" id="workerCount0">1</div>
                 </div>
-                <div class="worker-animation">👨‍🏭</div>
-                <div class="room-content">
-                    <div class="metric">
-                        <span class="metric-label">Designs Generated:</span>
-                        <span class="metric-value" id="etsyMetric">0</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Status:</span>
-                        <span class="metric-value" id="etsyStatusText">Ready</span>
-                    </div>
+                <div class="room-indicator" onclick="navigateToRoom(1)" data-room="1">
+                    <div class="room-icon">🎬</div>
+                    <div class="room-name">YT Studio</div>
+                    <div class="room-workers" id="workerCount1">1</div>
                 </div>
-                <button class="btn btn-primary" onclick="generateEtsyDesign()">
-                    📸 GENERATE DESIGN
-                </button>
+                <div class="room-indicator" onclick="navigateToRoom(2)" data-room="2">
+                    <div class="room-icon">🔬</div>
+                    <div class="room-name">Lab</div>
+                    <div class="room-workers" id="workerCount2">1</div>
+                </div>
             </div>
 
-            <!-- YOUTUBE ROOM -->
-            <div class="room" id="youtubeRoom">
-                <div class="room-header">
-                    <div class="room-title">🎬 YOUTUBE SHORTS STUDIO</div>
-                    <div class="worker-status" id="youtubeStatus"></div>
+            <!-- STATS PANEL -->
+            <div class="stats-panel">
+                <div class="stat">
+                    <span>Days Running:</span>
+                    <span class="stat-value" id="daysRunning">0</span>
                 </div>
-                <div class="worker-animation">🎥</div>
-                <div class="room-content">
-                    <div class="metric">
-                        <span class="metric-label">Videos Created:</span>
-                        <span class="metric-value" id="youtubeMetric">0</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Status:</span>
-                        <span class="metric-value" id="youtubeStatusText">Ready</span>
-                    </div>
+                <div class="stat">
+                    <span>Designs Made:</span>
+                    <span class="stat-value" id="designsMade">0</span>
                 </div>
-                <button class="btn btn-primary" onclick="generateYoutubeShort()">
-                    🎞️ GENERATE SHORT
-                </button>
+                <div class="stat">
+                    <span>Videos Made:</span>
+                    <span class="stat-value" id="videosMade">0</span>
+                </div>
+                <div class="stat">
+                    <span>Insights:</span>
+                    <span class="stat-value" id="insightsMade">0</span>
+                </div>
             </div>
 
-            <!-- RESEARCH ROOM -->
-            <div class="room" id="researchRoom">
-                <div class="room-header">
-                    <div class="room-title">🔬 RESEARCH CENTER</div>
-                    <div class="worker-status" id="researchStatus"></div>
+            <!-- CONTROLS PANEL -->
+            <div class="controls-panel">
+                <div class="control-title">Movement Controls</div>
+                <div class="movement-keys">
+                    <div class="key"></div>
+                    <div class="key">W</div>
+                    <div class="key"></div>
+                    <div class="key">A</div>
+                    <div class="key">S</div>
+                    <div class="key">D</div>
+                    <div class="key key-spacer">MOVE AROUND</div>
                 </div>
-                <div class="worker-animation">🧪</div>
-                <div class="room-content">
-                    <div class="metric">
-                        <span class="metric-label">Insights Generated:</span>
-                        <span class="metric-value" id="researchMetric">0</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Status:</span>
-                        <span class="metric-value" id="researchStatusText">Ready</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="generateResearchInsights()">
-                    🔍 ANALYZE TRENDS
-                </button>
-            </div>
-        </div>
 
-        <!-- BOTTOM STATUS BAR -->
-        <div class="bottom-bar">
-            <div>
-                <span id="statusIcon" class="loading"></span>
-                <span id="statusText">System Online | All Workers Active</span>
-            </div>
-            <div>⚡ Claude AI Factory v1.0 ⚡</div>
-        </div>
-    </div>
-
-    <!-- MODALS -->
-    <!-- ETSY MODAL -->
-    <div class="modal" id="etsyModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('etsyModal')">&times;</span>
-            <div class="modal-header">🛍️ ETSY DESIGN GENERATION</div>
-            <div class="modal-body" id="etsyContent">
-                <div style="text-align: center; padding: 20px;">
-                    <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
-                    <p>Generating trending design ideas...</p>
+                <div class="control-title" style="margin-top: 10px;">Actions</div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="performRoomAction()" id="roomActionBtn">
+                        🔄 Generate
+                    </button>
+                    <button class="action-btn" onclick="talkToWorker()" id="talkBtn">
+                        💬 Talk to Worker
+                    </button>
+                    <button class="action-btn" onclick="goBack()" style="margin-top: 10px;">
+                        🔙 Main Hub
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- YOUTUBE MODAL -->
-    <div class="modal" id="youtubeModal">
+    <!-- MODALS -->
+    <div class="modal" id="actionModal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('youtubeModal')">&times;</span>
-            <div class="modal-header">🎬 YOUTUBE SHORTS GENERATION</div>
-            <div class="modal-body" id="youtubeContent">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-header" id="modalTitle">Action Complete</div>
+            <div class="modal-body" id="modalBody">
                 <div style="text-align: center; padding: 20px;">
                     <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
-                    <p>Generating video script and ideas...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- RESEARCH MODAL -->
-    <div class="modal" id="researchModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('researchModal')">&times;</span>
-            <div class="modal-header">🔬 MARKET RESEARCH & TRENDS</div>
-            <div class="modal-body" id="researchContent">
-                <div style="text-align: center; padding: 20px;">
-                    <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
-                    <p>Analyzing market trends...</p>
+                    <p>Processing...</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Global state
-        let factoryData = {
-            daysRunning: 0,
-            designsMade: 0,
-            videosMade: 0,
-            insightsMade: 0
+        // ============ GAME STATE ============
+        const gameState = {
+            playerX: 400,
+            playerY: 400,
+            currentRoom: 0, // 0: Etsy, 1: YouTube, 2: Research
+            rooms: [
+                {
+                    name: "🛍️ Etsy POD Mine",
+                    icon: "🛍️",
+                    decoration: "👕👔👗",
+                    worker: { name: "Grimspark", emoji: "👷", color: "#FF6B6B" },
+                    action: "generate-design",
+                    actionName: "Generate Design"
+                },
+                {
+                    name: "🎬 YouTube Shorts Studio",
+                    icon: "🎬",
+                    decoration: "🎥📹🎞️",
+                    worker: { name: "Fluxwave", emoji: "🎬", color: "#4ECDC4" },
+                    action: "generate-short",
+                    actionName: "Generate Short"
+                },
+                {
+                    name: "🔬 Research Lab",
+                    icon: "🔬",
+                    decoration: "🧪🧬⚗️",
+                    worker: { name: "Synthora", emoji: "🧪", color: "#95E1D3" },
+                    action: "analyze",
+                    actionName: "Analyze Trends"
+                }
+            ],
+            stats: {
+                daysRunning: 0,
+                designsMade: 0,
+                videosMade: 0,
+                insightsMade: 0
+            },
+            workers: [
+                { name: "Grimspark", emoji: "👷", room: 0, x: 300, y: 300, color: "#FF6B6B" },
+                { name: "Fluxwave", emoji: "🎬", room: 1, x: 300, y: 300, color: "#4ECDC4" },
+                { name: "Synthora", emoji: "🧪", room: 2, x: 300, y: 300, color: "#95E1D3" }
+            ],
+            keys: {},
+            lastInteraction: { worker: -1, time: 0 },
+            inRoom: false
         };
 
-        // Initialize dashboard
-        async function initDashboard() {
-            updateFactoryStatus();
-            setInterval(updateFactoryStatus, 5000); // Update every 5 seconds
+        // ============ INITIALIZATION ============
+        window.addEventListener('load', () => {
+            initGame();
+            updateUI();
+            setInterval(updateFactoryStatus, 5000);
+            setInterval(animateWorkers, 100);
+            render();
+        });
+
+        function initGame() {
+            // Setup keyboard listeners
+            document.addEventListener('keydown', (e) => {
+                gameState.keys[e.key.toLowerCase()] = true;
+            });
+            document.addEventListener('keyup', (e) => {
+                gameState.keys[e.key.toLowerCase()] = false;
+            });
+
+            // Animation loop
+            setInterval(() => {
+                updatePlayerPosition();
+                render();
+            }, 30);
         }
 
-        // Update factory status
+        // ============ PLAYER MOVEMENT ============
+        function updatePlayerPosition() {
+            const speed = 5;
+            if (gameState.keys['w']) gameState.playerY -= speed;
+            if (gameState.keys['s']) gameState.playerY += speed;
+            if (gameState.keys['a']) gameState.playerX -= speed;
+            if (gameState.keys['d']) gameState.playerX += speed;
+
+            // Boundary check
+            const canvas = document.getElementById('gameCanvas');
+            gameState.playerX = Math.max(30, Math.min(canvas.clientWidth - 30, gameState.playerX));
+            gameState.playerY = Math.max(30, Math.min(canvas.clientHeight - 30, gameState.playerY));
+
+            // Update HUD
+            document.getElementById('playerPos').textContent =
+                `${Math.round(gameState.playerX)}, ${Math.round(gameState.playerY)}`;
+        }
+
+        // ============ WORKER ANIMATION ============
+        function animateWorkers() {
+            gameState.workers.forEach((worker, i) => {
+                if (worker.room === gameState.currentRoom) {
+                    // Random movement within room
+                    worker.x += (Math.random() - 0.5) * 2;
+                    worker.y += (Math.random() - 0.5) * 2;
+
+                    // Keep in bounds
+                    const canvas = document.getElementById('gameCanvas');
+                    worker.x = Math.max(50, Math.min(canvas.clientWidth - 50, worker.x));
+                    worker.y = Math.max(50, Math.min(canvas.clientHeight - 50, worker.y));
+                }
+            });
+        }
+
+        // ============ RENDERING ============
+        function render() {
+            const canvas = document.getElementById('gameCanvas');
+            canvas.innerHTML = '';
+
+            // Room background
+            const bgDiv = document.createElement('div');
+            bgDiv.className = 'room-bg';
+            bgDiv.textContent = gameState.rooms[gameState.currentRoom].icon;
+            canvas.appendChild(bgDiv);
+
+            // Draw decorations
+            for (let i = 0; i < 5; i++) {
+                const deco = document.createElement('div');
+                deco.className = 'room-decoration';
+                deco.style.left = (Math.random() * 90 + 5) + '%';
+                deco.style.top = (Math.random() * 90 + 5) + '%';
+                deco.textContent = gameState.rooms[gameState.currentRoom].decoration[
+                    Math.floor(Math.random() * gameState.rooms[gameState.currentRoom].decoration.length)
+                ];
+                canvas.appendChild(deco);
+            }
+
+            // Draw workers in current room
+            gameState.workers.forEach((worker, i) => {
+                if (worker.room === gameState.currentRoom) {
+                    const sprite = document.createElement('div');
+                    sprite.className = 'sprite npc';
+                    sprite.textContent = worker.emoji;
+                    sprite.style.left = worker.x + 'px';
+                    sprite.style.top = worker.y + 'px';
+                    sprite.style.color = worker.color;
+                    sprite.title = `${worker.name}`;
+
+                    // Interaction hint
+                    const hint = document.createElement('div');
+                    hint.className = 'press-e';
+                    hint.textContent = `${worker.name}`;
+                    hint.style.color = worker.color;
+                    sprite.appendChild(hint);
+
+                    canvas.appendChild(sprite);
+                }
+            });
+
+            // Draw player (Boss)
+            const player = document.createElement('div');
+            player.className = 'sprite player';
+            player.textContent = '👑';
+            player.style.left = gameState.playerX + 'px';
+            player.style.top = gameState.playerY + 'px';
+            canvas.appendChild(player);
+
+            // Update HUD
+            document.getElementById('playerRoom').textContent = gameState.rooms[gameState.currentRoom].name;
+        }
+
+        // ============ ROOM NAVIGATION ============
+        function navigateToRoom(roomIndex) {
+            gameState.currentRoom = roomIndex;
+            gameState.playerX = 400;
+            gameState.playerY = 400;
+            gameState.inRoom = true;
+
+            // Update mini-map
+            document.querySelectorAll('.room-indicator').forEach((el, i) => {
+                el.classList.toggle('active', i === roomIndex);
+            });
+
+            // Update button
+            const room = gameState.rooms[roomIndex];
+            document.getElementById('roomActionBtn').textContent = `🔄 ${room.actionName}`;
+
+            render();
+        }
+
+        function goBack() {
+            gameState.inRoom = false;
+            gameState.currentRoom = 0;
+            gameState.playerX = 400;
+            gameState.playerY = 400;
+
+            document.querySelectorAll('.room-indicator').forEach((el, i) => {
+                el.classList.toggle('active', i === 0);
+            });
+
+            render();
+        }
+
+        // ============ ACTIONS ============
+        function performRoomAction() {
+            const room = gameState.rooms[gameState.currentRoom];
+            showActionModal(room);
+        }
+
+        function talkToWorker() {
+            const currentWorker = gameState.workers[gameState.currentRoom];
+            showWorkerDialog(currentWorker);
+        }
+
+        async function showActionModal(room) {
+            document.getElementById('actionModal').classList.add('active');
+            document.getElementById('modalTitle').textContent = `⚡ ${room.actionName}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="loading" style="margin: 0 auto; width: 20px; height: 20px;"></div>
+                    <p>Generating ${room.actionName.toLowerCase()}...</p>
+                </div>
+            `;
+
+            try {
+                const endpoint = room.action === 'generate-design' ? '/api/etsy/generate-design' :
+                                room.action === 'generate-short' ? '/api/youtube/generate-short' :
+                                '/api/research/analyze';
+
+                const response = await fetch(endpoint);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    updateStats(room.action);
+                    showSuccessModal(room, data.data);
+                } else {
+                    document.getElementById('modalBody').innerHTML =
+                        '<p style="color: #ff4444;">Error generating. Try again!</p>';
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML =
+                    '<p style="color: #ff4444;">Connection error. Make sure server is running!</p>';
+            }
+        }
+
+        function showSuccessModal(room, data) {
+            let content = `<h3 style="color: #00ff00; margin-bottom: 10px;">✅ ${room.actionName} Complete!</h3>`;
+
+            if (data.ideas || data.scripts || data.insights) {
+                const info = data.ideas || data.scripts || data.insights;
+                content += `<pre style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 5px; overflow-x: auto; color: #00d4ff; max-height: 300px;">
+${JSON.stringify(info, null, 2).substring(0, 1000)}...</pre>`;
+            }
+
+            content += `<p style="color: #00d4ff; margin-top: 15px; text-align: center;">
+Worker: <strong>${gameState.workers[gameState.currentRoom].name}</strong> completed the task!</p>`;
+
+            document.getElementById('modalBody').innerHTML = content;
+        }
+
+        function showWorkerDialog(worker) {
+            document.getElementById('actionModal').classList.add('active');
+            document.getElementById('modalTitle').textContent = `💬 ${worker.name}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3em; margin-bottom: 10px;">${worker.emoji}</div>
+                    <p style="color: #00d4ff; margin-bottom: 15px;"><strong>${worker.name}</strong></p>
+                    <p style="margin-bottom: 10px;">"Hey boss ${worker.name}! I'm working hard on the ${gameState.rooms[gameState.currentRoom].name} tasks!"</p>
+                    <p style="color: #00ff00;">Tasks completed: ${Math.floor(Math.random() * 50) + 10}</p>
+                    <p style="color: #ff00ff; margin-top: 10px;">Production: ${Math.floor(Math.random() * 100) + 50}%</p>
+                </div>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('actionModal').classList.remove('active');
+        }
+
+        function updateStats(action) {
+            if (action === 'generate-design') gameState.stats.designsMade++;
+            else if (action === 'generate-short') gameState.stats.videosMade++;
+            else if (action === 'analyze') gameState.stats.insightsMade++;
+            updateUI();
+        }
+
+        // ============ UI UPDATES ============
         async function updateFactoryStatus() {
             try {
                 const response = await fetch('/api/factory-status');
                 const data = await response.json();
 
-                // Update header stats
-                document.getElementById('daysRunning').textContent = data.days_running;
+                gameState.stats.daysRunning = data.days_running;
 
-                // Update worker metrics
                 data.workers.forEach((worker, index) => {
-                    const status = worker.status === 'running' ? true : false;
-
-                    if (index === 0) { // Etsy
-                        document.getElementById('etsyStatus').className =
-                            'worker-status' + (status ? '' : ' inactive');
-                        document.getElementById('etsyStatusText').textContent = worker.status;
-                        document.getElementById('etsyMetric').textContent =
-                            worker.metrics.products_created || 0;
-                        factoryData.designsMade = worker.metrics.products_created || 0;
-                    } else if (index === 1) { // YouTube
-                        document.getElementById('youtubeStatus').className =
-                            'worker-status' + (status ? '' : ' inactive');
-                        document.getElementById('youtubeStatusText').textContent = worker.status;
-                        document.getElementById('youtubeMetric').textContent =
-                            worker.metrics.shorts_created || 0;
-                        factoryData.videosMade = worker.metrics.shorts_created || 0;
-                    } else if (index === 2) { // Research
-                        document.getElementById('researchStatus').className =
-                            'worker-status' + (status ? '' : ' inactive');
-                        document.getElementById('researchStatusText').textContent = worker.status;
-                        document.getElementById('researchMetric').textContent =
-                            worker.metrics.insights_generated || 0;
-                        factoryData.insightsMade = worker.metrics.insights_generated || 0;
+                    if (worker.metrics) {
+                        if (index === 0) gameState.stats.designsMade = worker.metrics.products_created || 0;
+                        else if (index === 1) gameState.stats.videosMade = worker.metrics.shorts_created || 0;
+                        else if (index === 2) gameState.stats.insightsMade = worker.metrics.insights_generated || 0;
                     }
                 });
 
-                // Update stats
-                document.getElementById('designsMade').textContent = factoryData.designsMade;
-                document.getElementById('videosMade').textContent = factoryData.videosMade;
-                document.getElementById('insightsMade').textContent = factoryData.insightsMade;
-
+                updateUI();
             } catch (error) {
-                console.error('Error updating factory status:', error);
+                console.error('Error updating status:', error);
             }
         }
 
-        // Generate Etsy Design
-        async function generateEtsyDesign() {
-            showModal('etsyModal');
-            updateRoomStatus('etsy', 'Generating...');
+        function updateUI() {
+            document.getElementById('daysRunning').textContent = gameState.stats.daysRunning;
+            document.getElementById('designsMade').textContent = gameState.stats.designsMade;
+            document.getElementById('videosMade').textContent = gameState.stats.videosMade;
+            document.getElementById('insightsMade').textContent = gameState.stats.insightsMade;
+        }
 
-            try {
-                const response = await fetch('/api/etsy/generate-design');
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    let content = '<div class="design-preview">✨</div>';
-                    content += '<h3 style="color: #00ff00; margin-bottom: 10px;">Generated Design Ideas:</h3>';
-
-                    if (data.data.ideas) {
-                        content += `<pre style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 5px; overflow-x: auto; color: #00d4ff;">
-${JSON.stringify(data.data.ideas, null, 2)}</pre>`;
-                    }
-
-                    document.getElementById('etsyContent').innerHTML = content;
-                    updateRoomStatus('etsy', 'Ready');
-                } else {
-                    document.getElementById('etsyContent').innerHTML =
-                        '<p style="color: #ff4444;">Error generating design. Try again!</p>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('etsyContent').innerHTML =
-                    '<p style="color: #ff4444;">Connection error. Make sure the server is running on port 5000</p>';
-                updateRoomStatus('etsy', 'Error');
+        // Close modal on outside click
+        window.onclick = (event) => {
+            const modal = document.getElementById('actionModal');
+            if (event.target === modal) {
+                closeModal();
             }
-        }
-
-        // Generate YouTube Short
-        async function generateYoutubeShort() {
-            showModal('youtubeModal');
-            updateRoomStatus('youtube', 'Generating...');
-
-            try {
-                const response = await fetch('/api/youtube/generate-short');
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    let content = '<div class="video-preview">🎬 VIDEO GENERATED</div>';
-                    content += '<h3 style="color: #ff00ff; margin-bottom: 10px;">YouTube Shorts Script & Ideas:</h3>';
-
-                    if (data.data.scripts) {
-                        content += `<pre style="background: rgba(255, 0, 255, 0.1); padding: 15px; border-radius: 5px; overflow-x: auto; color: #ff00ff;">
-${JSON.stringify(data.data.scripts, null, 2)}</pre>`;
-                    }
-
-                    document.getElementById('youtubeContent').innerHTML = content;
-                    updateRoomStatus('youtube', 'Ready');
-                } else {
-                    document.getElementById('youtubeContent').innerHTML =
-                        '<p style="color: #ff4444;">Error generating script. Try again!</p>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('youtubeContent').innerHTML =
-                    '<p style="color: #ff4444;">Connection error. Make sure the server is running on port 5000</p>';
-                updateRoomStatus('youtube', 'Error');
-            }
-        }
-
-        // Generate Research Insights
-        async function generateResearchInsights() {
-            showModal('researchModal');
-            updateRoomStatus('research', 'Analyzing...');
-
-            try {
-                const response = await fetch('/api/research/analyze');
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    let content = '<h3 style="color: #00d4ff; margin-bottom: 15px;">📊 Market Research Insights:</h3>';
-
-                    if (data.data.insights) {
-                        content += `<div style="background: rgba(0, 212, 255, 0.1); padding: 15px; border-radius: 5px; border-left: 3px solid #00d4ff;">
-<pre style="overflow-x: auto; color: #e0e0e0;">${JSON.stringify(data.data.insights, null, 2)}</pre>
-</div>`;
-                    }
-
-                    document.getElementById('researchContent').innerHTML = content;
-                    updateRoomStatus('research', 'Ready');
-                } else {
-                    document.getElementById('researchContent').innerHTML =
-                        '<p style="color: #ff4444;">Error analyzing trends. Try again!</p>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('researchContent').innerHTML =
-                    '<p style="color: #ff4444;">Connection error. Make sure the server is running on port 5000</p>';
-                updateRoomStatus('research', 'Error');
-            }
-        }
-
-        // UI Functions
-        function updateRoomStatus(room, status) {
-            const statusMap = {
-                'etsy': 'etsyStatusText',
-                'youtube': 'youtubeStatusText',
-                'research': 'researchStatusText'
-            };
-            document.getElementById(statusMap[room]).textContent = status;
-        }
-
-        function showModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.classList.remove('active');
-                }
-            });
         };
-
-        // Initialize on page load
-        window.addEventListener('load', initDashboard);
     </script>
 </body>
 </html>
