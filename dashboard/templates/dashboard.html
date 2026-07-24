@@ -347,6 +347,16 @@
             box-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
         }
 
+        .sprite-activity {
+            font-size: 0.38em;
+            font-family: 'Press Start 2P', cursive;
+            color: #b8dba0;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 2px 4px;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
         .sprite.player .sprite-image {
             width: 52px;
             height: 52px;
@@ -649,6 +659,13 @@
             '/static/rooms/research.jpg'
         ];
 
+        // What each worker is currently up to, indexed by room
+        const activities = {
+            0: ["browsing", "reading", "planning"],      // Alex
+            1: ["painting", "creating", "drawing"],      // Maria
+            2: ["typing", "analyzing", "researching"]    // Sam
+        };
+
         // GAME STATE
         const gameState = {
             playerX: 400,
@@ -681,19 +698,33 @@
                 insightsMade: 0
             },
             workers: [
-                { name: "Alex", room: 0, x: 300, y: 300, role: "DESIGNER" },
-                { name: "Maria", room: 1, x: 300, y: 300, role: "DIRECTOR" },
-                { name: "Sam", room: 2, x: 300, y: 300, role: "ANALYST" }
+                { name: "Alex", room: 0, x: 300, y: 300, role: "DESIGNER", activity: activities[0][0] },
+                { name: "Maria", room: 1, x: 300, y: 300, role: "DIRECTOR", activity: activities[1][0] },
+                { name: "Sam", room: 2, x: 300, y: 300, role: "ANALYST", activity: activities[2][0] }
             ],
             keys: {}
         };
+
+        // Pick a new random activity per worker, and refresh the sidebar labels to match
+        function updateActivities() {
+            gameState.workers.forEach((worker) => {
+                const options = activities[worker.room];
+                worker.activity = options[Math.floor(Math.random() * options.length)];
+            });
+            document.querySelectorAll('.room-worker').forEach((el, i) => {
+                const worker = gameState.workers[i];
+                el.textContent = `${worker.name} - ${worker.activity}`;
+            });
+        }
 
         // INITIALIZATION
         window.addEventListener('load', () => {
             initGame();
             updateUI();
+            updateActivities();
             setInterval(updateFactoryStatus, 5000);
             setInterval(animateWorkers, 100);
+            setInterval(updateActivities, 4000);
             render();
         });
 
@@ -772,8 +803,13 @@
                     imageDiv.className = 'sprite-image';
                     imageDiv.style.backgroundImage = `url(${CHARACTER_IMAGES[worker.name]})`;
 
+                    const activityDiv = document.createElement('div');
+                    activityDiv.className = 'sprite-activity';
+                    activityDiv.textContent = worker.activity + '...';
+
                     spriteDiv.appendChild(nameDiv);
                     spriteDiv.appendChild(imageDiv);
+                    spriteDiv.appendChild(activityDiv);
                     canvas.appendChild(spriteDiv);
                 }
             });
