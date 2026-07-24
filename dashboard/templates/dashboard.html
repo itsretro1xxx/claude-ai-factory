@@ -778,6 +778,9 @@
                     y: 300,
                     vx: 0,
                     vy: 0,
+                    targetX: 350,
+                    targetY: 300,
+                    speed: 90,
                     role: "DESIGNER",
                     color: "#FF6B6B",
                     activity: "browsing",
@@ -791,6 +794,9 @@
                     y: 280,
                     vx: 0,
                     vy: 0,
+                    targetX: 400,
+                    targetY: 280,
+                    speed: 90,
                     role: "DIRECTOR",
                     color: "#4ECDC4",
                     activity: "painting",
@@ -804,6 +810,9 @@
                     y: 320,
                     vx: 0,
                     vy: 0,
+                    targetX: 380,
+                    targetY: 320,
+                    speed: 90,
                     role: "ANALYST",
                     color: "#95E1D3",
                     activity: "typing",
@@ -821,6 +830,7 @@
             initGame();
             updateUI();
             gameState.workers.forEach(syncSidebarLabel);
+            gameState.workers.forEach(pickNewTarget);
             setInterval(updateFactoryStatus, 5000);
             gameState.lastTime = Date.now();
             requestAnimationFrame(gameLoop);
@@ -867,7 +877,7 @@
                 `${Math.round(gameState.playerX)},${Math.round(gameState.playerY)}`;
         }
 
-        // WORKER MOVEMENT WITH PATHFINDING
+        // WORKER MOVEMENT - walk to a workstation, pause, then head to another
         function updateWorkerPosition() {
             const canvas = document.getElementById('gameCanvas');
             const canvasRect = canvas.getBoundingClientRect();
@@ -876,28 +886,43 @@
 
             gameState.workers.forEach((worker) => {
                 if (worker.room === gameState.currentRoom) {
-                    worker.moveTimer += gameState.deltaTime;
+                    // Workers move toward workstations
+                    const dx = worker.targetX - worker.x;
+                    const dy = worker.targetY - worker.y;
+                    const distance = Math.hypot(dx, dy);
 
-                    // Every 1.8-3.6s, pick a new random destination
-                    if (worker.moveTimer > 1.8 + Math.random() * 1.8) {
-                        worker.vx = (Math.random() - 0.5) * 133; // px/sec
-                        worker.vy = (Math.random() - 0.5) * 133;
-                        worker.moveTimer = 0;
+                    if (distance > 10) {
+                        const angle = Math.atan2(dy, dx);
+                        worker.vx = Math.cos(angle) * worker.speed;
+                        worker.vy = Math.sin(angle) * worker.speed;
+                    } else {
+                        // Arrived - pause at the workstation, then pick a new one
+                        worker.vx = 0;
+                        worker.vy = 0;
+                        worker.moveTimer += gameState.deltaTime;
+                        if (worker.moveTimer > 2 + Math.random() * 2) {
+                            pickNewTarget(worker);
+                            worker.moveTimer = 0;
+                        }
                     }
 
-                    // Move worker
                     worker.x += worker.vx * gameState.deltaTime;
                     worker.y += worker.vy * gameState.deltaTime;
 
-                    // Bounce off walls
-                    if (worker.x < 50 || worker.x > width - 50) worker.vx *= -1;
-                    if (worker.y < 50 || worker.y > height - 50) worker.vy *= -1;
-
-                    // Keep in bounds
+                    // Safety clamp in case a workstation coordinate is near an edge
                     worker.x = Math.max(50, Math.min(width - 50, worker.x));
                     worker.y = Math.max(50, Math.min(height - 50, worker.y));
                 }
             });
+        }
+
+        // Send a worker to a random workstation in their room
+        function pickNewTarget(worker) {
+            const stations = gameState.rooms[worker.room].workstations;
+            if (!stations || !stations.length) return;
+            const station = stations[Math.floor(Math.random() * stations.length)];
+            worker.targetX = station.x;
+            worker.targetY = station.y;
         }
 
         // WORKER ACTIVITY ANIMATION
