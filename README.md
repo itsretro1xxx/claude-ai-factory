@@ -49,3 +49,18 @@ output live.
 - YouTube: free to publish; monetization (ad revenue) requires meeting Partner Program thresholds.
 - AI generation (images, script, voice): usage-based API costs, small per-asset but scales with volume.
 - Optional automation tooling (Make.com/Zapier or custom scripts) if you don't want to run pipelines by hand.
+
+## Worker chat prototype
+
+A minimal room/worker chat UI is available in [`worker-chat/`](worker-chat/).
+
+- Shows room-level worker lists with status, unread indicators, and **Interact** actions
+- Supports two-way manager/worker messaging with per-worker thread history
+- Persists chat history in browser storage so room and worker conversations can be resumed
+
+Run it locally:
+
+1. `cd /home/runner/work/claude-ai-factory/claude-ai-factory/worker-chat`
+2. `npm install`
+3. `npm run dev`
+4. `npm run test`

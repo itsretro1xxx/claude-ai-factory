@@ -1,0 +1,19 @@
+{
+  "name": "worker-chat",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run --environment jsdom",
+    "test:watch": "vitest --environment jsdom"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "jsdom": "^29.1.1",
+    "vite": "^8.1.1",
+    "vitest": "^4.1.10"
+  }
+}
